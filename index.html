@@ -1,0 +1,1069 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TernakAceh — Marketplace Ternak Terverifikasi SKKH & Syariah</title>
+    <meta
+      name="description"
+      content="Marketplace jual beli ternak terverifikasi SKKH dan prinsip syariah di Aceh dengan fitur patungan kurban 1/7, negosiasi harga langsung, titip rawat kandang virtual, dan rekening bersama escrow."
+    />
+    <meta property="og:title" content="TernakAceh — Marketplace Ternak Terverifikasi SKKH & Syariah" />
+    <meta
+      property="og:description"
+      content="Beli ternak sehat bersertifikat SKKH langsung dari peternak Aceh dengan escrow syariah, patungan kurban, dan kandang virtual."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <!-- Top Header (Clean 3-Zone Navigation) -->
+      <header class="site-header">
+        <div class="container header-inner">
+          <button type="button" class="brand-link" data-action="switch-tab" data-tab="katalog" aria-label="TernakAceh Beranda">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 6c0 3 2.5 5 7 5s7-2 7-5" />
+                <path d="M7 11v4a5 5 0 0 0 10 0v-4" />
+                <path d="M9.5 15h.01" />
+                <path d="M14.5 15h.01" />
+                <path d="M12 18v2" />
+              </svg>
+            </span>
+            <span class="brand-wordmark">Ternak<span class="brand-accent">Aceh</span></span>
+          </button>
+
+          <nav class="primary-nav" aria-label="Navigasi Utama">
+            <button type="button" class="nav-link is-active" data-action="switch-tab" data-tab="katalog" aria-current="page">
+              Katalog
+            </button>
+            <button type="button" class="nav-link" data-action="switch-tab" data-tab="patungan">
+              Patungan 1/7
+            </button>
+            <button type="button" id="nav-tab-pesanan" class="nav-link is-hidden" data-action="switch-tab" data-tab="pesanan">
+              Pesanan <span id="nav-order-count" class="nav-count tabular-nums">0</span>
+            </button>
+            <button type="button" id="nav-tab-peternak" class="nav-link is-hidden" data-action="switch-tab" data-tab="peternak">
+              Portal Peternak
+            </button>
+            <button type="button" id="nav-tab-admin" class="nav-link is-hidden" data-action="switch-tab" data-tab="admin">
+              Admin <span id="admin-pending-badge" class="nav-count nav-count--warn tabular-nums">0</span>
+            </button>
+          </nav>
+
+          <div class="header-cta">
+            <div id="header-user-info" class="header-user-info is-hidden">
+              <span id="header-user-name" class="header-user-name">Pengguna</span>
+              <span id="header-user-role" class="header-role-tag">User Biasa</span>
+            </div>
+            <button type="button" id="header-jual-btn" class="btn btn-secondary btn-sm is-hidden" data-action="switch-tab" data-tab="peternak">
+              Jual Ternak
+            </button>
+            <button type="button" id="header-login-btn" class="btn btn-primary btn-sm" data-action="open-auth">
+              Masuk / Daftar
+            </button>
+            <button type="button" id="header-logout-btn" class="btn btn-ghost btn-sm is-hidden" data-action="logout">
+              Keluar
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Workspace -->
+      <main id="main-content" class="container main-workspace">
+        <!-- View 1: Katalog Ternak -->
+        <section id="view-katalog" class="view-section" aria-label="Katalog Ternak">
+          <!-- Hero Section -->
+          <div class="hero-card">
+            <div class="hero-content">
+              <p class="hero-eyebrow">Sertifikasi SKKH · Rekening Bersama Syariah · 23 Kab/Kota Aceh</p>
+              <h1 class="hero-title">Beli Ternak Sehat Langsung dari Kandang Terpercaya di Aceh</h1>
+              <p class="hero-subtitle">
+                Dilengkapi bukti inspeksi 4 sudut &amp; gigi (<em>poel</em>), negosiasi harga langsung dengan peternak, patungan kurban 7 peserta, hingga layanan titip rawat Kandang Virtual.
+              </p>
+              <div class="hero-actions">
+                <button type="button" class="btn btn-white" data-action="scroll-to-catalog">
+                  Jelajahi Katalog
+                </button>
+                <button type="button" class="btn btn-outline-light" data-action="switch-tab" data-tab="patungan">
+                  Ikut Patungan Kurban 1/7
+                </button>
+              </div>
+            </div>
+            <div class="hero-trust-panel" aria-label="Ringkasan Kepercayaan Ekosistem">
+              <div class="trust-metric">
+                <span class="trust-label">Ternak Terverifikasi SKKH</span>
+                <strong id="stat-total-ternak" class="trust-value tabular-nums">8 Ekor</strong>
+              </div>
+              <div class="trust-metric">
+                <span class="trust-label">Dana Aman di Escrow</span>
+                <strong id="header-escrow-total" class="trust-value tabular-nums">Rp 26.450.000</strong>
+              </div>
+              <div class="trust-metric">
+                <span class="trust-label">Mitra Kandang KYC</span>
+                <strong class="trust-value tabular-nums">14 Kandang</strong>
+              </div>
+              <div class="trust-metric">
+                <span class="trust-label">Jaminan Serah Terima</span>
+                <strong class="trust-value">Timbang Ulang</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search & Smart Filter Bar -->
+          <section id="filter-bar" class="surface-card filter-panel" aria-label="Pencarian dan Filter Ternak">
+            <div class="filter-header">
+              <div class="search-field-wrap">
+                <label for="global-search" class="sr-only">Cari ternak atau nama kandang</label>
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  id="global-search"
+                  type="search"
+                  placeholder="Cari sapi aceh, kerbau meugang, kambing akikah, atau nama kandang..."
+                  class="input-control search-input"
+                />
+              </div>
+              <button type="button" class="btn btn-ghost btn-sm" data-action="reset-filters">
+                Reset Filter
+              </button>
+            </div>
+
+            <div class="filter-grid">
+              <div class="field-group">
+                <label for="filter-jenis" class="field-label">Jenis &amp; Ras Ternak</label>
+                <select id="filter-jenis" class="input-control">
+                  <option value="Semua">Semua Jenis Ternak</option>
+                  <option value="Sapi Aceh">Sapi Aceh</option>
+                  <option value="Sapi Limosin">Sapi Limosin</option>
+                  <option value="Kerbau">Kerbau</option>
+                  <option value="Kambing Etawa">Kambing Etawa</option>
+                  <option value="Domba">Domba</option>
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label for="filter-peruntukan" class="field-label">Peruntukan Kebutuhan</label>
+                <select id="filter-peruntukan" class="input-control">
+                  <option value="Semua">Semua Peruntukan</option>
+                  <option value="Kurban">Kurban (Iduladha)</option>
+                  <option value="Akikah">Akikah Anak</option>
+                  <option value="Meugang / Potong">Meugang / Potong</option>
+                  <option value="Penggemukan">Bakalan / Penggemukan</option>
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label for="filter-lokasi" class="field-label">Lokasi Kandang</label>
+                <select id="filter-lokasi" class="input-control">
+                  <option value="Semua">Seluruh Aceh</option>
+                  <option value="Banda Aceh">Banda Aceh</option>
+                  <option value="Aceh Besar">Aceh Besar</option>
+                  <option value="Pidie">Pidie</option>
+                  <option value="Bireuen">Bireuen</option>
+                  <option value="Aceh Tengah">Aceh Tengah</option>
+                  <option value="Lhokseumawe">Lhokseumawe</option>
+                  <option value="Meulaboh">Meulaboh</option>
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label for="filter-sort" class="field-label">Urutkan</label>
+                <select id="filter-sort" class="input-control">
+                  <option value="terbaru">Terbaru Masuk Kandang</option>
+                  <option value="harga-rendah">Harga Terendah</option>
+                  <option value="bobot-berat">Bobot Terberat (kg)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="quick-filter-bar" role="group" aria-label="Filter cepat kategori populer">
+              <span class="quick-filter-label">Populer:</span>
+              <button type="button" class="filter-chip" data-action="quick-filter" data-filter-type="peruntukan" data-filter-value="Kurban">
+                Siap Kurban (Poel)
+              </button>
+              <button type="button" class="filter-chip" data-action="quick-filter" data-filter-type="peruntukan" data-filter-value="Meugang / Potong">
+                Daging Meugang Aceh
+              </button>
+              <button type="button" class="filter-chip" data-action="quick-filter" data-filter-type="peruntukan" data-filter-value="Akikah">
+                Paket Akikah
+              </button>
+              <button type="button" class="filter-chip" data-action="quick-filter" data-filter-type="jenis" data-filter-value="Sapi Aceh">
+                Sapi Aceh Asli
+              </button>
+            </div>
+          </section>
+
+          <!-- Results Summary -->
+          <div class="catalog-toolbar">
+            <p class="results-summary" aria-live="polite">
+              Menampilkan <strong id="catalog-count" class="tabular-nums">8</strong> hewan ternak terverifikasi SKKH
+            </p>
+            <p class="results-note">Harga transparan per ekor &amp; estimasi bobot hidup/kg</p>
+          </div>
+
+          <!-- Livestock Grid -->
+          <div id="catalog-grid" class="catalog-grid" data-testid="catalog-grid"></div>
+        </section>
+
+        <!-- View 2: Patungan Kurban (1/7 Slot) -->
+        <section id="view-patungan" class="view-section is-hidden" aria-label="Patungan Kurban 1/7">
+          <div class="section-intro surface-card">
+            <div class="section-intro-main">
+              <p class="section-kicker">Program Kurban Kolektif Syariah</p>
+              <h2 class="section-title">Patungan Kurban Sapi &amp; Kerbau (Maksimal 7 Peserta)</h2>
+              <p class="section-desc">
+                Sesuai tuntunan syariat, 1 ekor sapi atau kerbau yang telah cukup umur (<em>poel</em>) dapat dikurbankan untuk maksimal 7 orang. Pilih slot kosong, pantau peserta lain secara transparan, dan ikuti pengawasan hingga hari-H.
+              </p>
+            </div>
+            <div class="section-intro-aside">
+              <h3 class="aside-title">Ketentuan Patungan</h3>
+              <ul class="check-list">
+                <li>Kuota otomatis terkunci saat 7/7 terisi</li>
+                <li>Dana aman di Escrow hingga penyembelihan</li>
+                <li>Tersedia layanan titip rawat kandang virtual</li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="patungan-grid" class="patungan-grid" data-testid="patungan-grid"></div>
+        </section>
+
+        <!-- View 3: Pesanan & Kandang Virtual -->
+        <section id="view-pesanan" class="view-section is-hidden" aria-label="Pesanan dan Kandang Virtual">
+          <div class="section-header-row">
+            <div>
+              <h2 class="section-title">Pesanan Saya &amp; Kandang Virtual</h2>
+              <p class="section-desc">
+                Pantau status dana Escrow, perkembangan bobot ternak titip rawat, hingga konfirmasi timbang ulang saat serah terima.
+              </p>
+            </div>
+            <button type="button" class="btn btn-primary" data-action="switch-tab" data-tab="katalog">
+              + Beli / Titip Ternak Baru
+            </button>
+          </div>
+
+          <div id="orders-list" class="orders-list" data-testid="orders-list"></div>
+        </section>
+
+        <!-- View 4: Portal Peternak -->
+        <section id="view-peternak" class="view-section is-hidden" aria-label="Portal Peternak">
+          <div class="section-header-row surface-card section-banner">
+            <div>
+              <p class="section-kicker">Mitra Kandang Terverifikasi KYC</p>
+              <h2 class="section-title">Portal Peternak &amp; Manajemen Stok Kandang</h2>
+              <p class="section-desc">
+                Terbitkan listing ternak baru beserta 4 sudut foto verifikasi fisik &amp; gigi, serta kelola ketersediaan stok secara real-time.
+              </p>
+            </div>
+          </div>
+
+          <div class="farmer-layout">
+            <!-- Form Tambah Ternak -->
+            <div class="surface-card farmer-form-card">
+              <h3 class="card-heading">Tambah Listing Ternak Baru</h3>
+              <p class="card-subheading">Ternak dengan 4 foto lengkap akan langsung tayang di Katalog Ternak.</p>
+
+              <form id="farmer-add-form" class="form-stack" novalidate>
+                <div class="field-group">
+                  <label for="f-nama" class="field-label">Nama / Julukan Ternak *</label>
+                  <input
+                    id="f-nama"
+                    type="text"
+                    required
+                    placeholder="Contoh: Sapi Aceh Jantan — Meurah Seulawah"
+                    class="input-control"
+                  />
+                </div>
+
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label for="f-jenis" class="field-label">Jenis Ternak *</label>
+                    <select id="f-jenis" class="input-control">
+                      <option value="Sapi Aceh">Sapi Aceh</option>
+                      <option value="Sapi Limosin">Sapi Limosin</option>
+                      <option value="Kerbau">Kerbau</option>
+                      <option value="Kambing Etawa">Kambing Etawa</option>
+                      <option value="Domba">Domba</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label for="f-peruntukan" class="field-label">Peruntukan Utama *</label>
+                    <select id="f-peruntukan" class="input-control">
+                      <option value="Kurban">Kurban</option>
+                      <option value="Akikah">Akikah</option>
+                      <option value="Meugang / Potong">Meugang / Potong</option>
+                      <option value="Penggemukan">Penggemukan</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label for="f-lokasi" class="field-label">Kabupaten / Kota *</label>
+                    <select id="f-lokasi" class="input-control">
+                      <option value="Aceh Besar">Aceh Besar</option>
+                      <option value="Banda Aceh">Banda Aceh</option>
+                      <option value="Pidie">Pidie</option>
+                      <option value="Bireuen">Bireuen</option>
+                      <option value="Aceh Tengah">Aceh Tengah</option>
+                      <option value="Lhokseumawe">Lhokseumawe</option>
+                      <option value="Meulaboh">Meulaboh</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label for="f-kelamin" class="field-label">Jenis Kelamin *</label>
+                    <select id="f-kelamin" class="input-control">
+                      <option value="Jantan">Jantan</option>
+                      <option value="Betina">Betina</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label for="f-bobot" class="field-label">Estimasi Bobot (kg) *</label>
+                    <input id="f-bobot" type="number" required min="15" max="1200" value="310" class="input-control tabular-nums" />
+                  </div>
+                  <div class="field-group">
+                    <label for="f-usia" class="field-label">Usia &amp; Status Gigi *</label>
+                    <input id="f-usia" type="text" required value="2.5 Tahun (Poel 1)" class="input-control" />
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label for="f-harga" class="field-label">Harga Per Ekor (Rp) *</label>
+                    <input id="f-harga" type="number" required min="500000" step="50000" value="21000000" class="input-control tabular-nums" />
+                  </div>
+                  <div class="field-group">
+                    <label for="f-skkh" class="field-label">Nomor Sertifikat SKKH *</label>
+                    <input id="f-skkh" type="text" required value="SKKH-ACH-2026-089" class="input-control font-mono" />
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label for="f-peternak" class="field-label">Nama Kandang / Peternak *</label>
+                  <input
+                    id="f-peternak"
+                    type="text"
+                    required
+                    value="Kandang Darussalam Agro (Tgk. Hasan)"
+                    class="input-control"
+                  />
+                </div>
+
+                <!-- 4 Slot Foto Wajib -->
+                <div class="photo-upload-box">
+                  <div class="photo-upload-header">
+                    <div>
+                      <span class="field-label">Unggah 4 Foto Wajib (Arah Sudut &amp; Gigi) *</span>
+                      <p class="photo-upload-hint">Wajib lengkap 4 sudut untuk verifikasi kesehatan &amp; kelayakan.</p>
+                    </div>
+                    <span id="photo-completeness-badge" class="status-text status-text--warn tabular-nums">
+                      0/4 Foto Terunggah
+                    </span>
+                  </div>
+
+                  <div class="auto-sample-bar">
+                    <span class="auto-sample-text">Belum siap file foto di perangkat?</span>
+                    <button type="button" class="btn btn-secondary btn-xs" data-action="fill-sample-photos">
+                      Isi Contoh Foto Otomatis
+                    </button>
+                  </div>
+
+                  <div id="farmer-photo-slots-grid" class="photo-slots-grid"></div>
+                </div>
+
+                <div class="checkbox-stack">
+                  <label class="checkbox-row">
+                    <input type="checkbox" id="f-patungan" checked />
+                    <span>Aktifkan opsi Patungan Kurban (7 Slot)</span>
+                  </label>
+                  <label class="checkbox-row">
+                    <input type="checkbox" id="f-titip" checked />
+                    <span>Sediakan layanan Titip Rawat (Kandang Virtual)</span>
+                  </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                  Terbitkan ke Katalog TernakAceh
+                </button>
+              </form>
+            </div>
+
+            <!-- Tabel Manajemen Stok -->
+            <div class="surface-card farmer-stock-card">
+              <div class="table-header-row">
+                <div>
+                  <h3 class="card-heading">Manajemen Stok Kandang</h3>
+                  <p class="card-subheading">Perbarui status ternak secara langsung untuk mencegah pemesanan ganda.</p>
+                </div>
+                <span id="farmer-stock-count" class="stock-count tabular-nums">8 Listing</span>
+              </div>
+
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Hewan Ternak</th>
+                      <th>Bobot &amp; Harga</th>
+                      <th>SKKH</th>
+                      <th class="text-right">Status Kandang</th>
+                    </tr>
+                  </thead>
+                  <tbody id="farmer-stock-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- View 5: Verifikasi & Escrow (Admin) -->
+        <section id="view-admin" class="view-section is-hidden" aria-label="Panel Verifikasi dan Escrow Admin">
+          <div class="surface-card admin-summary-card">
+            <h2 class="section-title">Panel Moderasi, Verifikasi SKKH &amp; Escrow Syariah</h2>
+            <p class="section-desc">
+              Pusat kendali pengelola platform TernakAceh untuk validasi identitas kandang (KYC), keabsahan sertifikat dokter hewan (SKKH), dan pengawasan dana transaksi.
+            </p>
+
+            <div class="admin-metrics-grid">
+              <div class="metric-box metric-box--brand">
+                <span class="metric-label">Dana Tertahan di Rekening Escrow</span>
+                <strong id="admin-escrow-held" class="metric-value tabular-nums">Rp 26.450.000</strong>
+                <span class="metric-sub">Menunggu konfirmasi timbang ulang pembeli</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-label">Dana Dicairkan ke Peternak</span>
+                <strong id="admin-escrow-released" class="metric-value tabular-nums">Rp 148.500.000</strong>
+                <span class="metric-sub">100% serah terima sesuai standar bobot</span>
+              </div>
+              <div class="metric-box metric-box--warn">
+                <span class="metric-label">Antrean Verifikasi KYC &amp; SKKH</span>
+                <strong id="admin-queue-count" class="metric-value tabular-nums">2 Pengajuan</strong>
+                <span class="metric-sub">Perlu tinjauan dokumen sebelum tayang</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="surface-card admin-queue-card">
+            <h3 class="card-heading">Validasi Kandang (KYC) &amp; Dokumen Kesehatan (SKKH)</h3>
+            <div id="admin-verification-list" class="verification-list"></div>
+          </div>
+
+          <div class="surface-card admin-queue-card">
+            <div class="table-header-row">
+              <div>
+                <h3 class="card-heading">Manajemen Akun &amp; Peran Pengguna</h3>
+                <p class="card-subheading">Tetapkan peran akses (User Biasa, Operator Kandang, atau Admin) pada akun terdaftar di database.</p>
+              </div>
+              <span id="admin-user-count" class="stock-count tabular-nums">0 Akun</span>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nama &amp; Username</th>
+                    <th>Email</th>
+                    <th>Metode Login</th>
+                    <th class="text-right">Peran Akses</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="container footer-inner">
+          <div class="footer-brand">
+            <strong>TernakAceh</strong>
+            <span aria-hidden="true">·</span>
+            <span>Ekosistem Digital Peternakan &amp; Ibadah Kurban/Akikah Provinsi Aceh</span>
+          </div>
+          <div class="footer-actions">
+            <span>Standar SKKH Dinas Peternakan</span>
+            <span aria-hidden="true">·</span>
+            <span>Rekening Bersama Syariah</span>
+            <button type="button" id="footer-reset-btn" class="footer-reset-btn is-hidden" data-action="reset-demo">
+              · Reset Data Demo
+            </button>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Modal 1: Detail Ternak, Inspeksi 4 Sudut & Chat Nego -->
+    <div id="modal-detail" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+      <div class="modal-dialog modal-dialog--xl">
+        <div class="modal-header">
+          <div class="modal-header-title">
+            <span id="detail-badge-jenis" class="modal-kicker">Sapi Aceh</span>
+            <h3 id="detail-title" class="modal-title">Detail Ternak</h3>
+          </div>
+          <button type="button" class="icon-close-btn" data-action="close-modal" data-modal="modal-detail" aria-label="Tutup detail ternak">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="detail-grid">
+          <!-- Left: Visual Inspection -->
+          <div class="detail-gallery-col">
+            <div>
+              <div id="detail-visual-stage" class="visual-stage"></div>
+
+              <div class="angle-switcher" role="group" aria-label="Sudut inspeksi ternak">
+                <button type="button" id="insp-btn-samping" class="angle-btn is-active" data-action="switch-angle" data-angle="samping">
+                  1. Samping
+                </button>
+                <button type="button" id="insp-btn-depan" class="angle-btn" data-action="switch-angle" data-angle="depan">
+                  2. Depan
+                </button>
+                <button type="button" id="insp-btn-gigi" class="angle-btn" data-action="switch-angle" data-angle="gigi">
+                  3. Gigi (Poel)
+                </button>
+                <button type="button" id="insp-btn-belakang" class="angle-btn" data-action="switch-angle" data-angle="belakang">
+                  4. Belakang
+                </button>
+              </div>
+
+              <p id="detail-visual-caption" class="visual-caption"></p>
+            </div>
+
+            <div class="detail-specs-grid">
+              <div class="spec-tile">
+                <span class="spec-label">Estimasi Bobot</span>
+                <strong id="detail-bobot" class="spec-value tabular-nums">320 kg</strong>
+              </div>
+              <div class="spec-tile">
+                <span class="spec-label">Usia / Gigi</span>
+                <strong id="detail-usia" class="spec-value">2.5 Thn (Poel 1)</strong>
+              </div>
+              <div class="spec-tile">
+                <span class="spec-label">Harga / kg Hidup</span>
+                <strong id="detail-harga-kg" class="spec-value spec-value--brand tabular-nums">Rp 67.200</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Info & SKKH vs Chat Nego -->
+          <div class="detail-info-col">
+            <div>
+              <div class="segmented-tabs" role="tablist" aria-label="Detail dan Negosiasi">
+                <button type="button" id="subtab-btn-info" class="segmented-tab is-active" data-action="switch-detail-subtab" data-subtab="info" role="tab" aria-selected="true">
+                  Info &amp; Sertifikat SKKH
+                </button>
+                <button type="button" id="subtab-btn-nego" class="segmented-tab" data-action="switch-detail-subtab" data-subtab="nego" role="tab" aria-selected="false">
+                  Chat &amp; Tawar Harga (Nego)
+                </button>
+              </div>
+
+              <!-- Subtab Info -->
+              <div id="detail-subtab-info" class="subtab-panel">
+                <div class="price-header-row">
+                  <div>
+                    <span class="field-label">Harga Penawaran Peternak</span>
+                    <div id="detail-harga" class="detail-price tabular-nums">Rp 21.500.000</div>
+                  </div>
+                  <span id="detail-deal-pill" class="deal-tag is-hidden">Harga Deal Nego Aktif</span>
+                </div>
+
+                <div class="seller-card">
+                  <div class="seller-info">
+                    <span class="seller-avatar" aria-hidden="true">PA</span>
+                    <div>
+                      <div class="seller-name-row">
+                        <strong id="detail-peternak">Tgk. Sulaiman</strong>
+                        <span class="kyc-inline">Terverifikasi KYC</span>
+                      </div>
+                      <p id="detail-lokasi" class="seller-loc">Aceh Besar</p>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-secondary btn-xs" data-action="switch-detail-subtab" data-subtab="nego">
+                    Tawar Harga
+                  </button>
+                </div>
+
+                <div class="skkh-card">
+                  <div class="skkh-header">
+                    <span class="skkh-title">Surat Keterangan Kesehatan Hewan (SKKH)</span>
+                    <span id="detail-skkh-no" class="skkh-code font-mono">SKKH-001</span>
+                  </div>
+                  <div class="skkh-grid">
+                    <div>Vaksin PMK &amp; Antraks: <strong>Lengkap</strong></div>
+                    <div>Obat Cacing: <strong>Rutin 3 Bln</strong></div>
+                    <div>Kondisi Fisik: <strong>Sehat, Bebas Cacat</strong></div>
+                    <div>Syarat Syar'i: <strong id="detail-syari">Sah Kurban</strong></div>
+                  </div>
+                </div>
+
+                <p id="detail-deskripsi" class="detail-description"></p>
+              </div>
+
+              <!-- Subtab Chat & Nego -->
+              <div id="detail-subtab-nego" class="subtab-panel is-hidden">
+                <div id="nego-chat-box" class="chat-history" aria-live="polite"></div>
+
+                <div class="nego-offer-box">
+                  <label for="nego-offer-input" class="field-label">Ajukan Penawaran Harga Resmi (Rp)</label>
+                  <div class="inline-input-row">
+                    <input
+                      id="nego-offer-input"
+                      type="number"
+                      step="50000"
+                      placeholder="Masukkan nominal tawaran..."
+                      class="input-control tabular-nums"
+                    />
+                    <button type="button" class="btn btn-primary btn-sm" data-action="submit-nego-offer">
+                      Kirim Nego
+                    </button>
+                  </div>
+                </div>
+
+                <form id="chat-msg-form" class="inline-input-row">
+                  <label for="chat-msg-input" class="sr-only">Pesan ke peternak</label>
+                  <input
+                    id="chat-msg-input"
+                    type="text"
+                    placeholder="Tanya kondisi pakan, video kandang, atau jadwal kirim..."
+                    class="input-control"
+                  />
+                  <button type="submit" class="btn btn-dark btn-sm">Kirim</button>
+                </form>
+              </div>
+            </div>
+
+            <div class="detail-footer">
+              <button type="button" id="detail-checkout-btn" class="btn btn-primary btn-block" data-action="open-checkout-from-detail">
+                Lanjut Pemesanan &amp; Escrow
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 2: Checkout & Akad Syariah -->
+    <div id="modal-checkout" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
+      <div class="modal-dialog modal-dialog--xl">
+        <div class="modal-header modal-header--brand">
+          <div>
+            <h3 id="checkout-modal-title" class="modal-title modal-title--light">Checkout &amp; Akad Transaksi Syariah</h3>
+            <p class="modal-subtitle-light">Dana ditahan aman di Escrow hingga ternak diterima &amp; ditimbang ulang</p>
+          </div>
+          <button type="button" class="icon-close-btn icon-close-btn--light" data-action="close-modal" data-modal="modal-checkout" aria-label="Tutup checkout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body checkout-grid">
+          <div class="checkout-left-col">
+            <!-- 1. Skema Pembelian -->
+            <div class="checkout-section">
+              <span class="checkout-section-title">1. Pilih Skema Pembelian</span>
+              <div class="scheme-grid">
+                <label class="scheme-option">
+                  <input type="radio" name="co-scheme" value="full" checked />
+                  <span class="scheme-title">Bayar Penuh (1 Ekor)</span>
+                  <span class="scheme-desc">Kepemilikan penuh 100%</span>
+                </label>
+
+                <label class="scheme-option">
+                  <input type="radio" name="co-scheme" value="dp" />
+                  <span class="scheme-title">Booking DP (30%)</span>
+                  <span class="scheme-desc">Kunci stok, lunas saat tiba</span>
+                </label>
+
+                <label id="co-patungan-option" class="scheme-option">
+                  <input type="radio" name="co-scheme" value="patungan" />
+                  <span class="scheme-title">Patungan Kurban (1/7)</span>
+                  <span class="scheme-desc">Kolektif 7 peserta syar'i</span>
+                </label>
+              </div>
+
+              <div id="co-patungan-box" class="patungan-slot-picker is-hidden">
+                <div class="slot-picker-header">
+                  <span>Pilih Slot Peserta Kurban Anda (bisa lebih dari 1):</span>
+                  <strong id="co-slot-selected-info" class="tabular-nums">1 Slot Dipilih</strong>
+                </div>
+                <div id="co-slots-grid" class="co-slots-grid"></div>
+              </div>
+            </div>
+
+            <!-- 2. Layanan Titip Rawat -->
+            <div class="checkout-card">
+              <label class="checkbox-row checkbox-row--top">
+                <input type="checkbox" id="co-titip-check" />
+                <div class="checkbox-body">
+                  <div class="checkbox-title-row">
+                    <strong>Aktifkan Layanan Titip Rawat (Kandang Virtual)</strong>
+                    <span class="recommend-tag">Rekomendasi</span>
+                  </div>
+                  <p class="checkbox-desc">
+                    Titipkan ternak di kandang peternak hingga hari-H (Iduladha/Meugang) dengan laporan foto &amp; bobot berkala.
+                  </p>
+                </div>
+              </label>
+
+              <div id="co-titip-options" class="titip-options is-hidden">
+                <div class="field-group">
+                  <label for="co-titip-days" class="field-label">Durasi Titip Rawat</label>
+                  <select id="co-titip-days" class="input-control">
+                    <option value="14">14 Hari (2 Minggu)</option>
+                    <option value="30" selected>30 Hari (1 Bulan)</option>
+                    <option value="60">60 Hari (2 Bulan)</option>
+                  </select>
+                </div>
+                <div class="rate-info-tile">
+                  <span class="field-label">Biaya Pakan &amp; Vitamin Harian</span>
+                  <strong id="co-titip-rate-text" class="tabular-nums">Rp 25.000 / hari</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Pengiriman -->
+            <div class="checkout-card">
+              <span class="checkout-section-title">2. Metode Pengiriman &amp; Kalkulator Ongkir</span>
+              <div class="form-row-2">
+                <div class="field-group">
+                  <label for="co-shipping-method" class="field-label">Armada Pengangkutan</label>
+                  <select id="co-shipping-method" class="input-control">
+                    <option value="pickup">Ambil Sendiri di Kandang (Gratis)</option>
+                    <option value="farmer" selected>Armada Kandang Peternak</option>
+                    <option value="mitra">Mitra Pikap / Truk Khusus Ternak</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label for="co-shipping-dest" class="field-label">Kabupaten / Kota Tujuan</label>
+                  <select id="co-shipping-dest" class="input-control">
+                    <option value="Banda Aceh">Banda Aceh</option>
+                    <option value="Aceh Besar">Aceh Besar</option>
+                    <option value="Pidie">Pidie</option>
+                    <option value="Bireuen">Bireuen</option>
+                    <option value="Lhokseumawe">Lhokseumawe</option>
+                    <option value="Aceh Tengah">Aceh Tengah</option>
+                    <option value="Meulaboh">Meulaboh</option>
+                  </select>
+                </div>
+              </div>
+              <div class="shipping-estimate-row">
+                <span id="co-shipping-info">Estimasi pengiriman</span>
+                <strong id="co-shipping-cost" class="tabular-nums">Rp 250.000</strong>
+              </div>
+            </div>
+
+            <!-- 4. Layanan Lanjutan -->
+            <div class="checkout-card">
+              <span class="checkout-section-title">3. Layanan Lanjutan (Opsional)</span>
+              <div class="form-row-2">
+                <label class="addon-option">
+                  <input type="checkbox" id="co-addon-jagal" />
+                  <div>
+                    <strong>Jasa Jagal Syar'i &amp; Cacah</strong>
+                    <span class="tabular-nums">+ Rp 350.000 (Siap bagi)</span>
+                  </div>
+                </label>
+                <label class="addon-option">
+                  <input type="checkbox" id="co-addon-katering" />
+                  <div>
+                    <strong>Masak Kuah Beulangong / Akikah</strong>
+                    <span class="tabular-nums">+ Rp 1.250.000 (60 porsi)</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="checkout-right-col">
+            <div class="checkout-summary-banner">
+              <div>
+                <span id="co-peternak" class="co-farmer">Peternak</span>
+                <h4 id="co-nama" class="co-name">Nama Ternak</h4>
+                <p id="co-specs" class="co-specs">Bobot · Lokasi</p>
+              </div>
+              <div class="co-price-block">
+                <span class="field-label">Harga Acuan</span>
+                <strong id="co-base-price" class="co-price tabular-nums">Rp 0</strong>
+              </div>
+            </div>
+
+            <!-- Ringkasan Pembayaran -->
+            <div class="escrow-ledger">
+              <div class="ledger-row">
+                <span id="co-summary-label">Harga Ternak</span>
+                <span id="co-summary-ternak" class="tabular-nums">Rp 0</span>
+              </div>
+              <div class="ledger-row">
+                <span>Biaya Titip Rawat Kandang Virtual</span>
+                <span id="co-summary-titip" class="tabular-nums">Rp 0</span>
+              </div>
+              <div class="ledger-row">
+                <span>Ongkos Kirim Armada Ternak</span>
+                <span id="co-summary-ongkir" class="tabular-nums">Rp 0</span>
+              </div>
+              <div class="ledger-row">
+                <span>Jasa Jagal / Katering Tambahan</span>
+                <span id="co-summary-addon" class="tabular-nums">Rp 0</span>
+              </div>
+              <div class="ledger-total-row">
+                <div>
+                  <div class="ledger-total-label">Total Transfer ke Escrow Syariah</div>
+                  <div class="ledger-total-sub">Bank Aceh Syariah / BSI Virtual Account</div>
+                </div>
+                <strong id="co-summary-total" class="ledger-total-value tabular-nums">Rp 0</strong>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block btn-lg" data-action="confirm-checkout">
+              Bayar Sekarang &amp; Amankan Dana di Escrow
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 3: Kandang Virtual -->
+    <div id="modal-virtual-barn" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="vb-title">
+      <div class="modal-dialog modal-dialog--md">
+        <div class="modal-header modal-header--brand">
+          <div>
+            <span class="modal-kicker modal-kicker--light">Monitoring Kandang Virtual</span>
+            <h3 id="vb-title" class="modal-title modal-title--light">Perkembangan Ternak</h3>
+          </div>
+          <button type="button" class="icon-close-btn icon-close-btn--light" data-action="close-modal" data-modal="modal-virtual-barn" aria-label="Tutup kandang virtual">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="vb-metrics-grid">
+            <div class="spec-tile">
+              <span class="spec-label">Bobot Awal Akad</span>
+              <strong id="vb-initial-weight" class="spec-value tabular-nums">320 kg</strong>
+            </div>
+            <div class="spec-tile spec-tile--brand">
+              <span class="spec-label">Bobot Terkini</span>
+              <strong id="vb-current-weight" class="spec-value spec-value--brand tabular-nums">334 kg (+14 kg)</strong>
+            </div>
+            <div class="spec-tile">
+              <span class="spec-label">Status Kesehatan</span>
+              <strong class="spec-value spec-value--brand">Prima &amp; Aktif</strong>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="checkout-section-title">Log Laporan Perawatan &amp; Pakan Berkala</h4>
+            <div id="vb-logs-container" class="vb-logs-list"></div>
+          </div>
+
+          <div class="vb-footer-row">
+            <span class="vb-footer-hint">Minta pembaruan penimbangan terbaru dari kandang:</span>
+            <button type="button" class="btn btn-primary btn-sm" data-action="simulate-barn-log">
+              + Catat Laporan Timbang Baru
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: Konfirmasi Serah Terima & Timbang Ulang -->
+    <div id="modal-handover" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="ho-modal-title">
+      <div class="modal-dialog modal-dialog--sm">
+        <div class="modal-header modal-header--dark">
+          <div>
+            <h3 id="ho-modal-title" class="modal-title modal-title--light">Konfirmasi Serah Terima &amp; Timbang Ulang</h3>
+            <p class="modal-subtitle-light">Pencairan dana Escrow hanya dilakukan setelah Anda menyetujui kondisi ternak</p>
+          </div>
+          <button type="button" class="icon-close-btn icon-close-btn--light" data-action="close-modal" data-modal="modal-handover" aria-label="Tutup konfirmasi timbang ulang">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="checkout-summary-banner">
+            <div>
+              <h4 id="ho-order-name" class="co-name">Nama Ternak</h4>
+              <p class="co-specs">Bobot Tercatat di Akad: <strong id="ho-expected-weight" class="tabular-nums">320 kg</strong></p>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="ho-actual-weight" class="field-label">Bobot Aktual Saat Tiba di Lokasi (kg) *</label>
+            <input id="ho-actual-weight" type="number" min="1" step="0.5" class="input-control tabular-nums" />
+            <p id="ho-weight-feedback" class="weight-feedback"></p>
+          </div>
+
+          <div class="checkbox-stack">
+            <label class="checkbox-row">
+              <input type="checkbox" id="ho-check-health" checked />
+              <span>Hewan tiba dalam keadaan sehat, tidak pincang, dan bebas cacat fisik.</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" id="ho-check-skkh" checked />
+              <span>Dokumen fisik SKKH &amp; identitas ternak sesuai dengan aplikasi.</span>
+            </label>
+          </div>
+
+          <div class="handover-actions">
+            <button type="button" class="btn btn-primary btn-block" data-action="complete-escrow-release">
+              Konfirmasi Terima &amp; Cairkan Dana Escrow
+            </button>
+            <button type="button" id="ho-dispute-btn" class="btn btn-warn btn-block is-hidden" data-action="open-escrow-dispute">
+              Ajukan Mediasi Penyusutan Bobot ke Admin Escrow
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 5: Autentikasi (Google & Username/Password) -->
+    <div id="modal-auth" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <div class="modal-dialog modal-dialog--sm">
+        <div class="modal-header modal-header--brand">
+          <div>
+            <h3 id="auth-modal-title" class="modal-title modal-title--light">Masuk ke TernakAceh</h3>
+            <p class="modal-subtitle-light">Akses fitur transaksi Escrow, Kandang Virtual, Portal Peternak, atau Panel Admin</p>
+          </div>
+          <button type="button" class="icon-close-btn icon-close-btn--light" data-action="close-modal" data-modal="modal-auth" aria-label="Tutup jendela masuk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="segmented-tabs" role="tablist" aria-label="Mode Autentikasi">
+            <button type="button" id="auth-tab-login" class="segmented-tab is-active" data-action="switch-auth-mode" data-mode="login" role="tab" aria-selected="true">
+              Masuk Akun
+            </button>
+            <button type="button" id="auth-tab-register" class="segmented-tab" data-action="switch-auth-mode" data-mode="register" role="tab" aria-selected="false">
+              Daftar Akun Baru
+            </button>
+          </div>
+
+          <button type="button" id="auth-google-btn" class="btn btn-ghost btn-block google-signin-btn" data-action="google-login">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            </svg>
+            <span>Masuk dengan Akun Google</span>
+          </button>
+
+          <div class="auth-divider">
+            <span>atau gunakan username &amp; password</span>
+          </div>
+
+          <p id="auth-error-msg" class="auth-error-banner is-hidden" role="alert"></p>
+
+          <form id="auth-login-form" class="form-stack" novalidate>
+            <div class="field-group">
+              <label for="login-username" class="field-label">Username</label>
+              <input
+                id="login-username"
+                name="username"
+                type="text"
+                autocomplete="username"
+                required
+                placeholder="Masukkan username Anda"
+                class="input-control"
+              />
+            </div>
+            <div class="field-group">
+              <label for="login-password" class="field-label">Password</label>
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                placeholder="Masukkan password Anda"
+                class="input-control"
+              />
+            </div>
+            <button type="submit" id="auth-login-submit" class="btn btn-primary btn-block">
+              Masuk ke Akun
+            </button>
+          </form>
+
+          <form id="auth-register-form" class="form-stack is-hidden" novalidate>
+            <div class="field-group">
+              <label for="reg-display-name" class="field-label">Nama Lengkap *</label>
+              <input
+                id="reg-display-name"
+                type="text"
+                autocomplete="name"
+                required
+                placeholder="Contoh: Cut Putri Rahmah"
+                class="input-control"
+              />
+            </div>
+            <div class="form-row-2">
+              <div class="field-group">
+                <label for="reg-username" class="field-label">Username *</label>
+                <input
+                  id="reg-username"
+                  type="text"
+                  autocomplete="username"
+                  required
+                  placeholder="Minimal 3 karakter"
+                  class="input-control"
+                />
+              </div>
+              <div class="field-group">
+                <label for="reg-email" class="field-label">Email (Opsional)</label>
+                <input
+                  id="reg-email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="nama@contoh.com"
+                  class="input-control"
+                />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="reg-password" class="field-label">Password *</label>
+              <input
+                id="reg-password"
+                type="password"
+                autocomplete="new-password"
+                required
+                placeholder="Minimal 6 karakter"
+                class="input-control"
+              />
+            </div>
+            <button type="submit" id="auth-register-submit" class="btn btn-primary btn-block">
+              Daftar Sebagai User Biasa
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

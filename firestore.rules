@@ -1,0 +1,396 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ==================== PRIMITIVES ====================
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'habibalmulki2006@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isVerifiedUser() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isOperator() {
+      return isAdmin() || (
+        isVerifiedUser() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'operator'
+      );
+    }
+
+    // ==================== VALIDATION BLUEPRINTS ====================
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'role', 'provider', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'displayName', 'role', 'provider', 'createdAt', 'updatedAt']) &&
+        isValidId(data.uid) &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+        data.role in ['user', 'operator', 'admin'] &&
+        data.provider in ['google', 'password'] &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidUserPrivateInfo(data, userId) {
+      return data.keys().hasAll(['uid', 'email', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'updatedAt']) &&
+        data.uid == userId &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 200 &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidAdminMarker(data, userId) {
+      return data.keys().hasAll(['uid', 'grantedAt']) &&
+        data.keys().hasOnly(['uid', 'grantedAt']) &&
+        data.uid == userId &&
+        data.grantedAt is timestamp;
+    }
+
+    function isValidLivestockItem(data, livestockId) {
+      return data.keys().hasAll([
+          'id', 'nama', 'jenis', 'peruntukan', 'lokasi',
+          'bobot', 'harga', 'ownerId', 'skkh', 'status',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'nama', 'jenis', 'peruntukan', 'lokasi', 'kecamatan',
+          'bobot', 'usia', 'kelamin', 'harga', 'peternak', 'ownerId',
+          'kyc', 'skkh', 'status', 'patungan', 'filledSlotCount',
+          'titipRawat', 'colorHex', 'deskripsi', 'createdAt', 'updatedAt'
+        ]) &&
+        data.id == livestockId &&
+        data.nama is string && data.nama.size() >= 3 && data.nama.size() <= 180 &&
+        data.jenis is string && data.jenis.size() >= 2 && data.jenis.size() <= 60 &&
+        data.peruntukan is string && data.peruntukan.size() >= 2 && data.peruntukan.size() <= 60 &&
+        data.lokasi is string && data.lokasi.size() >= 2 && data.lokasi.size() <= 80 &&
+        (!('kecamatan' in data) || (data.kecamatan is string && data.kecamatan.size() <= 100)) &&
+        data.bobot is number && data.bobot >= 5 && data.bobot <= 2000 &&
+        (!('usia' in data) || (data.usia is string && data.usia.size() <= 60)) &&
+        (!('kelamin' in data) || data.kelamin in ['Jantan', 'Betina']) &&
+        data.harga is number && data.harga >= 100000 &&
+        (!('peternak' in data) || (data.peternak is string && data.peternak.size() <= 150)) &&
+        isValidId(data.ownerId) &&
+        (!('kyc' in data) || data.kyc is bool) &&
+        data.skkh is string && data.skkh.size() >= 3 && data.skkh.size() <= 80 &&
+        data.status in ['Tersedia', 'Dipesan (DP)', 'Terjual'] &&
+        (!('patungan' in data) || data.patungan is bool) &&
+        (!('filledSlotCount' in data) || (data.filledSlotCount is number && data.filledSlotCount >= 0 && data.filledSlotCount <= 7)) &&
+        (!('titipRawat' in data) || data.titipRawat is bool) &&
+        (!('colorHex' in data) || (data.colorHex is string && data.colorHex.size() <= 20)) &&
+        (!('deskripsi' in data) || (data.deskripsi is string && data.deskripsi.size() <= 1000)) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidOrderRecord(data, orderId) {
+      return data.keys().hasAll([
+          'orderId', 'buyerId', 'ternakId', 'nama', 'scheme',
+          'totalPaid', 'escrowStatus', 'isEscrowReleased',
+          'initialWeight', 'currentWeight', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'orderId', 'buyerId', 'ternakId', 'nama', 'peternak', 'scheme',
+          'totalPaid', 'escrowStatus', 'isEscrowReleased', 'hasTitipRawat',
+          'initialWeight', 'currentWeight', 'createdAt', 'updatedAt'
+        ]) &&
+        data.orderId == orderId &&
+        isValidId(data.buyerId) &&
+        isValidId(data.ternakId) &&
+        data.nama is string && data.nama.size() >= 3 && data.nama.size() <= 180 &&
+        (!('peternak' in data) || (data.peternak is string && data.peternak.size() <= 150)) &&
+        data.scheme is string && data.scheme.size() >= 3 && data.scheme.size() <= 120 &&
+        data.totalPaid is number && data.totalPaid > 0 &&
+        data.escrowStatus in [
+          'Dana Aman di Escrow',
+          'Dititip Rawat di Kandang Virtual',
+          'Dalam Pengiriman Armada Kandang',
+          'Mediasi Sengketa Bobot (Ditahan Admin)',
+          'Selesai · Dana Cair ke Peternak'
+        ] &&
+        data.isEscrowReleased is bool &&
+        (!('hasTitipRawat' in data) || data.hasTitipRawat is bool) &&
+        data.initialWeight is number && data.initialWeight > 0 &&
+        data.currentWeight is number && data.currentWeight > 0 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidBarnLog(data, orderId) {
+      return data.keys().hasAll(['orderId', 'authorId', 'weight', 'note', 'feed', 'createdAt']) &&
+        data.keys().hasOnly(['orderId', 'authorId', 'weight', 'note', 'feed', 'createdAt']) &&
+        data.orderId == orderId &&
+        isValidId(data.authorId) &&
+        data.authorId == request.auth.uid &&
+        data.weight is number && data.weight > 0 &&
+        data.note is string && data.note.size() >= 1 && data.note.size() <= 500 &&
+        data.feed is string && data.feed.size() >= 1 && data.feed.size() <= 200 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidVerificationRequest(data, verId) {
+      return data.keys().hasAll(['id', 'kandang', 'lokasi', 'ternak', 'skkhNo', 'status', 'requesterId', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['id', 'kandang', 'lokasi', 'ternak', 'skkhNo', 'status', 'requesterId', 'createdAt', 'updatedAt']) &&
+        data.id == verId &&
+        data.kandang is string && data.kandang.size() >= 2 && data.kandang.size() <= 150 &&
+        data.lokasi is string && data.lokasi.size() >= 2 && data.lokasi.size() <= 80 &&
+        data.ternak is string && data.ternak.size() >= 2 && data.ternak.size() <= 150 &&
+        data.skkhNo is string && data.skkhNo.size() >= 3 && data.skkhNo.size() <= 80 &&
+        data.status in ['Menunggu Verifikasi', 'Terverifikasi KYC & SKKH'] &&
+        isValidId(data.requesterId) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidNegotiationMessage(data, livestockId) {
+      return data.keys().hasAll(['livestockId', 'senderId', 'senderRole', 'text', 'createdAt']) &&
+        data.keys().hasOnly(['livestockId', 'senderId', 'senderRole', 'text', 'createdAt']) &&
+        data.livestockId == livestockId &&
+        data.senderId == request.auth.uid &&
+        data.senderRole in ['buyer', 'seller'] &&
+        data.text is string && data.text.size() >= 1 && data.text.size() <= 500 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidAppMetrics(data) {
+      return data.keys().hasAll(['escrowReleasedTotal', 'updatedAt']) &&
+        data.keys().hasOnly(['escrowReleasedTotal', 'updatedAt']) &&
+        data.escrowReleasedTotal is number &&
+        data.escrowReleasedTotal >= 0 &&
+        data.updatedAt is timestamp;
+    }
+
+    // ==================== COLLECTION RULES ====================
+
+    // Connection health check doc (read-only ping)
+    match /test/connection {
+      allow get: if true;
+    }
+
+    // App metrics
+    match /appConfig/{docId} {
+      allow get: if isValidId(docId);
+      allow create, update: if isValidId(docId) &&
+        docId == 'metrics' &&
+        isAdmin() &&
+        isValidAppMetrics(incoming()) &&
+        incoming().updatedAt == request.time;
+    }
+
+    // Users collection (public role metadata only, NO PII)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if (isSignedIn() && resource.data.uid == request.auth.uid) || isAdmin();
+
+      allow create: if isValidId(userId) &&
+        isVerifiedUser() &&
+        isOwner(userId) &&
+        isValidUserProfile(incoming()) &&
+        incoming().uid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (incoming().role == 'user' || (isBootstrappedAdmin() && incoming().role == 'admin'));
+
+      allow update: if isValidId(userId) &&
+        isValidUserProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['role', 'displayName', 'updatedAt'])) ||
+          (isVerifiedUser() && isOwner(userId) && incoming().role == existing().role &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'updatedAt']))
+        );
+
+      allow delete: if isValidId(userId) && isAdmin();
+
+      // PII Isolation: user email stored strictly in private subcollection
+      match /private/{docId} {
+        allow get: if isValidId(userId) && isValidId(docId) && (isOwner(userId) || isAdmin());
+        allow create, update: if isValidId(userId) &&
+          docId == 'info' &&
+          isVerifiedUser() &&
+          (isOwner(userId) || isAdmin()) &&
+          isValidUserPrivateInfo(incoming(), userId) &&
+          incoming().updatedAt == request.time;
+        allow delete: if isValidId(userId) && isValidId(docId) && isAdmin();
+      }
+    }
+
+    // Trusted Admin Markers
+    match /admins/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create, update: if isValidId(userId) &&
+        isAdmin() &&
+        isValidAdminMarker(incoming(), userId) &&
+        incoming().grantedAt == request.time;
+      allow delete: if isValidId(userId) && isAdmin();
+    }
+
+    // Livestock Catalog
+    match /livestock/{livestockId} {
+      allow get: if isValidId(livestockId);
+      allow list: if resource.data.status in ['Tersedia', 'Dipesan (DP)', 'Terjual'];
+
+      allow create: if isValidId(livestockId) &&
+        isOperator() &&
+        isValidLivestockItem(incoming(), livestockId) &&
+        incoming().ownerId == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isValidId(livestockId) &&
+        isValidLivestockItem(incoming(), livestockId) &&
+        incoming().id == existing().id &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          isAdmin() ||
+          (isOperator() && existing().ownerId == request.auth.uid &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'harga', 'deskripsi', 'filledSlotCount', 'updatedAt'])) ||
+          (isVerifiedUser() && existing().status != 'Terjual' &&
+            incoming().status != 'Tersedia' &&
+            incoming().filledSlotCount >= existing().filledSlotCount &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'filledSlotCount', 'updatedAt']))
+        );
+
+      allow delete: if isValidId(livestockId) && isAdmin();
+    }
+
+    // Escrow Orders & Kandang Virtual
+    match /orders/{orderId} {
+      allow get: if isValidId(orderId) && (
+        (isSignedIn() && existing().buyerId == request.auth.uid) ||
+        isAdmin() ||
+        isOperator()
+      );
+      allow list: if (isSignedIn() && resource.data.buyerId == request.auth.uid) || isAdmin() || isOperator();
+
+      allow create: if isValidId(orderId) &&
+        isVerifiedUser() &&
+        isValidOrderRecord(incoming(), orderId) &&
+        incoming().buyerId == request.auth.uid &&
+        incoming().isEscrowReleased == false &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/livestock/$(incoming().ternakId));
+
+      allow update: if isValidId(orderId) &&
+        isValidOrderRecord(incoming(), orderId) &&
+        incoming().orderId == existing().orderId &&
+        incoming().buyerId == existing().buyerId &&
+        incoming().ternakId == existing().ternakId &&
+        incoming().initialWeight == existing().initialWeight &&
+        incoming().totalPaid == existing().totalPaid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          isAdmin() ||
+          (existing().isEscrowReleased == false && isOperator() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['currentWeight', 'escrowStatus', 'updatedAt'])) ||
+          (existing().isEscrowReleased == false && isVerifiedUser() && existing().buyerId == request.auth.uid &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['escrowStatus', 'isEscrowReleased', 'updatedAt']))
+        );
+
+      allow delete: if isValidId(orderId) && isAdmin();
+
+      // Master Gate Subcollection: Kandang Virtual Logs
+      match /logs/{logId} {
+        allow get: if isValidId(orderId) && isValidId(logId) && (
+          (isSignedIn() && get(/databases/$(database)/documents/orders/$(orderId)).data.buyerId == request.auth.uid) ||
+          isAdmin() ||
+          isOperator()
+        );
+        allow list: if isValidId(orderId) && (
+          (isSignedIn() && get(/databases/$(database)/documents/orders/$(orderId)).data.buyerId == request.auth.uid) ||
+          isAdmin() ||
+          isOperator()
+        );
+        allow create: if isValidId(orderId) && isValidId(logId) &&
+          isVerifiedUser() &&
+          isValidBarnLog(incoming(), orderId) &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/orders/$(orderId)) && (
+            isAdmin() ||
+            isOperator() ||
+            get(/databases/$(database)/documents/orders/$(orderId)).data.buyerId == request.auth.uid
+          );
+      }
+    }
+
+    // Admin KYC & SKKH Verification Queue
+    match /verifications/{verId} {
+      allow get: if isValidId(verId) && (isAdmin() || isOperator());
+      allow list: if isAdmin() || isOperator();
+
+      allow create: if isValidId(verId) &&
+        isOperator() &&
+        isValidVerificationRequest(incoming(), verId) &&
+        incoming().requesterId == request.auth.uid &&
+        incoming().status == 'Menunggu Verifikasi' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isValidId(verId) &&
+        isAdmin() &&
+        isValidVerificationRequest(incoming(), verId) &&
+        incoming().id == existing().id &&
+        incoming().requesterId == existing().requesterId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        existing().status != 'Terverifikasi KYC & SKKH' &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+
+      allow delete: if isValidId(verId) && isAdmin();
+    }
+
+    // Negotiation Chat Messages (Master Gate to /livestock/{livestockId})
+    match /chats/{livestockId}/messages/{messageId} {
+      allow get: if isValidId(livestockId) && isValidId(messageId) && (
+        (isVerifiedUser() && resource.data.senderId == request.auth.uid) ||
+        isAdmin() ||
+        isOperator()
+      );
+      allow list: if isValidId(livestockId) && (
+        (isVerifiedUser() && resource.data.senderId == request.auth.uid) ||
+        isAdmin() ||
+        isOperator()
+      );
+      allow create: if isValidId(livestockId) && isValidId(messageId) &&
+        isVerifiedUser() &&
+        isValidNegotiationMessage(incoming(), livestockId) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/livestock/$(livestockId));
+    }
+  }
+}

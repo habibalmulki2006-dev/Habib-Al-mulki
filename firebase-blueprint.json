@@ -1,0 +1,441 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public role and display metadata for an authenticated user without PII.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "operator", "admin"]
+        },
+        "provider": {
+          "type": "string",
+          "enum": ["google", "password"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "displayName", "role", "provider", "createdAt", "updatedAt"]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Isolated PII document for user email.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 200
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "updatedAt"]
+    },
+    "AdminMarker": {
+      "title": "AdminMarker",
+      "description": "Trusted marker document granting admin privileges.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "grantedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "grantedAt"]
+    },
+    "LivestockItem": {
+      "title": "LivestockItem",
+      "description": "SKKH-verified livestock listing in the TernakAceh marketplace.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "nama": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 180
+        },
+        "jenis": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "peruntukan": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "lokasi": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "kecamatan": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "bobot": {
+          "type": "number"
+        },
+        "usia": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "kelamin": {
+          "type": "string",
+          "enum": ["Jantan", "Betina"]
+        },
+        "harga": {
+          "type": "number"
+        },
+        "peternak": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "kyc": {
+          "type": "boolean"
+        },
+        "skkh": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Tersedia", "Dipesan (DP)", "Terjual"]
+        },
+        "patungan": {
+          "type": "boolean"
+        },
+        "filledSlotCount": {
+          "type": "number"
+        },
+        "titipRawat": {
+          "type": "boolean"
+        },
+        "colorHex": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "deskripsi": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "nama",
+        "jenis",
+        "peruntukan",
+        "lokasi",
+        "bobot",
+        "harga",
+        "ownerId",
+        "skkh",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "OrderRecord": {
+      "title": "OrderRecord",
+      "description": "Syariah Escrow livestock order with optional Kandang Virtual monitoring.",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "buyerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ternakId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "nama": {
+          "type": "string",
+          "maxLength": 180
+        },
+        "peternak": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "scheme": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "totalPaid": {
+          "type": "number"
+        },
+        "escrowStatus": {
+          "type": "string",
+          "enum": [
+            "Dana Aman di Escrow",
+            "Dititip Rawat di Kandang Virtual",
+            "Dalam Pengiriman Armada Kandang",
+            "Mediasi Sengketa Bobot (Ditahan Admin)",
+            "Selesai · Dana Cair ke Peternak"
+          ]
+        },
+        "isEscrowReleased": {
+          "type": "boolean"
+        },
+        "hasTitipRawat": {
+          "type": "boolean"
+        },
+        "initialWeight": {
+          "type": "number"
+        },
+        "currentWeight": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "orderId",
+        "buyerId",
+        "ternakId",
+        "nama",
+        "scheme",
+        "totalPaid",
+        "escrowStatus",
+        "isEscrowReleased",
+        "initialWeight",
+        "currentWeight",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "BarnLog": {
+      "title": "BarnLog",
+      "description": "Weekly weight and feed log for Kandang Virtual.",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "weight": {
+          "type": "number"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "feed": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["orderId", "authorId", "weight", "note", "feed", "createdAt"]
+    },
+    "VerificationRequest": {
+      "title": "VerificationRequest",
+      "description": "Farmer KYC and SKKH verification queue item.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "kandang": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "lokasi": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "ternak": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "skkhNo": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Menunggu Verifikasi", "Terverifikasi KYC & SKKH"]
+        },
+        "requesterId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "kandang", "lokasi", "ternak", "skkhNo", "status", "requesterId", "createdAt", "updatedAt"]
+    },
+    "NegotiationMessage": {
+      "title": "NegotiationMessage",
+      "description": "Chat message between buyer and farmer/operator for a livestock item.",
+      "type": "object",
+      "properties": {
+        "livestockId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderRole": {
+          "type": "string",
+          "enum": ["buyer", "seller"]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["livestockId", "senderId", "senderRole", "text", "createdAt"]
+    },
+    "AppMetrics": {
+      "title": "AppMetrics",
+      "description": "Aggregate marketplace escrow metrics.",
+      "type": "object",
+      "properties": {
+        "escrowReleasedTotal": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["escrowReleasedTotal", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "UserProfile" },
+      "description": "Public role and display metadata for authenticated users."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "UserPrivateInfo" },
+      "description": "Isolated PII document storing user email."
+    },
+    "/admins/{userId}": {
+      "schema": { "$ref": "AdminMarker" },
+      "description": "Admin role assignment markers."
+    },
+    "/livestock/{livestockId}": {
+      "schema": { "$ref": "LivestockItem" },
+      "description": "SKKH-verified livestock catalog items."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "OrderRecord" },
+      "description": "Buyer escrow orders."
+    },
+    "/orders/{orderId}/logs/{logId}": {
+      "schema": { "$ref": "BarnLog" },
+      "description": "Kandang Virtual growth and feed logs."
+    },
+    "/verifications/{verId}": {
+      "schema": { "$ref": "VerificationRequest" },
+      "description": "Admin KYC & SKKH approval queue."
+    },
+    "/chats/{livestockId}/messages/{messageId}": {
+      "schema": { "$ref": "NegotiationMessage" },
+      "description": "Buyer-seller negotiation chat messages."
+    },
+    "/appConfig/{docId}": {
+      "schema": { "$ref": "AppMetrics" },
+      "description": "Marketplace escrow configuration and totals."
+    }
+  }
+}

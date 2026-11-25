@@ -1,0 +1,6 @@
+{
+  "name": "TernakAceh",
+  "description": "Marketplace jual beli ternak terverifikasi SKKH dan prinsip syariah di Aceh dengan fitur patungan kurban, negosiasi langsung, kandang virtual, dan escrow syariah.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

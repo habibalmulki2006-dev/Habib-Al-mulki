@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TernakAceh — Marketplace Jual Beli Ternak Terverifikasi SKKH & Syariah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ECFDF5',
+              100: '#DCFCE7',
+              200: '#BBF7D0',
+              500: '#22C55E',
+              600: '#16A34A',
+              700: '#15803D',
+              800: '#065F46',
+              900: '#064E3B',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F8FAF9;
+      color: #1E293B;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Custom subtle scrollbar for horizontal nav on mobile */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Smooth modal transitions */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(14px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-modal {
+      animation: fadeSlideUp 0.22s ease-out forwards;
+    }
+    /* Subtle walking gait animation for health inspection */
+    @keyframes gaitWalk {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-3px) rotate(-0.6deg); }
+      50% { transform: translateY(0px) rotate(0deg); }
+      75% { transform: translateY(-3px) rotate(0.6deg); }
+    }
+    .animate-gait {
+      animation: gaitWalk 1.4s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-100 selection:text-brand-800">
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- TOP HEADER & ECOSYSTEM BAR -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-sm">
+    <!-- Top Syariah & Trust Micro-Banner -->
+    <div class="bg-brand-800 text-white text-xs py-1.5 px-4">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-medium">Transaksi Aman dengan Rekening Bersama (Escrow Syariah) & Jaminan Bebas Cacat</span>
+        </div>
+        <div class="hidden md:flex items-center gap-4 text-emerald-100">
+          <span>Mendukung Qanun LKS Aceh</span>
+          <span>•</span>
+          <span>Layanan Kurban, Akikah & Tradisi Meugang</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+        <!-- Brand Logo -->
+        <div class="flex items-center justify-between">
+          <button onclick="switchTab('katalog')" class="flex items-center gap-3 text-left group focus:outline-none">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-800 flex items-center justify-center text-white shadow-md shadow-emerald-900/15 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 6c0 3 2.5 5 7 5s7-2 7-5" />
+                <path d="M7 11v4a5 5 0 0 0 10 0v-4" />
+                <path d="M9.5 15h.01" />
+                <path d="M14.5 15h.01" />
+                <path d="M12 18v2" />
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xl font-extrabold tracking-tight text-slate-900">Ternak<span class="text-brand-700">Aceh</span></span>
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200">Syariah</span>
+              </div>
+              <p class="text-xs text-slate-500">Sentra Jual Beli Ternak Terverifikasi SKKH</p>
+            </div>
+          </button>
+
+          <!-- Mobile Quick Cart/Orders Pill -->
+          <button onclick="switchTab('pesanan')" class="md:hidden relative inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 font-semibold text-xs border border-brand-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span>Pesanan</span>
+            <span id="mobile-order-badge" class="bg-brand-700 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full">2</span>
+          </button>
+        </div>
+
+        <!-- Global Search Bar -->
+        <div class="flex-1 max-w-xl">
+          <div class="relative">
+            <input
+              type="text"
+              id="global-search"
+              oninput="handleSearchInput(this.value)"
+              placeholder="Cari sapi aceh, kerbau meugang, kambing akikah, atau nama kandang..."
+              class="w-full pl-10 pr-24 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600 transition-all placeholder:text-slate-400"
+            />
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <button onclick="switchTab('katalog')" class="absolute right-1.5 top-1.5 px-3 py-1 bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold rounded-lg transition-colors">
+              Cari
+            </button>
+          </div>
+        </div>
+
+        <!-- Ecosystem Trust Stats (Desktop) -->
+        <div class="hidden lg:flex items-center gap-4 pl-2 border-l border-slate-200">
+          <div class="text-right">
+            <div class="text-[11px] font-medium text-slate-500">Dana Aman Escrow</div>
+            <div id="header-escrow-total" class="text-sm font-extrabold text-brand-700">Rp 26.450.000</div>
+          </div>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div class="flex items-center gap-2 bg-brand-50 px-3 py-1.5 rounded-xl border border-brand-100">
+            <div class="w-2.5 h-2.5 rounded-full bg-brand-600"></div>
+            <div>
+              <div class="text-[11px] font-bold text-brand-800" id="header-skkh-count">8 Ternak SKKH</div>
+              <div class="text-[10px] text-brand-700">100% Peternak KYC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Primary Role & Section Navigation Tabs -->
+      <nav class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar" aria-label="Navigasi Utama">
+        <button data-tab="katalog" onclick="switchTab('katalog')" class="nav-tab active-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-brand-700 text-white shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          <span>Katalog Ternak</span>
+        </button>
+
+        <button data-tab="patungan" onclick="switchTab('patungan')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-800 border border-slate-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>Patungan Kurban (1/7)</span>
+          <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-brand-100 text-brand-800">Kolektif</span>
+        </button>
+
+        <button data-tab="pesanan" onclick="switchTab('pesanan')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-800 border border-slate-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span>Pesanan & Kandang Virtual</span>
+          <span id="nav-order-count" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-brand-700 text-white">2</span>
+        </button>
+
+        <button data-tab="peternak" onclick="switchTab('peternak')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-800 border border-slate-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+          <span>Portal Peternak (Jual)</span>
+        </button>
+
+        <button data-tab="admin" onclick="switchTab('admin')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-800 border border-slate-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span>Verifikasi & Escrow (Admin)</span>
+          <span id="admin-pending-badge" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800">2</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== TAB 1: KATALOG TERNAK ==================== -->
+    <section id="view-katalog" class="space-y-6">
+      <!-- Hero / Value Proposition Banner -->
+      <div class="bg-gradient-to-r from-brand-800 via-brand-700 to-emerald-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg shadow-emerald-900/10 relative overflow-hidden">
+        <div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 pointer-events-none flex items-center justify-center">
+          <svg class="w-64 h-64" viewBox="0 0 200 200" fill="currentColor">
+            <circle cx="100" cy="100" r="85" />
+          </svg>
+        </div>
+        <div class="relative z-10 max-w-3xl space-y-3">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold text-emerald-50 border border-white/20">
+            <span>✓ Bebas PMK & Antraks</span>
+            <span>•</span>
+            <span>✓ Timbang Akurat</span>
+            <span>•</span>
+            <span>✓ Akad Jelas & Transparan</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+            Beli Ternak Sehat Langsung dari Kandang Peternak Terpercaya di Aceh
+          </h1>
+          <p class="text-sm sm:text-base text-emerald-50/90 leading-relaxed">
+            Dilengkapi Surat Keterangan Kesehatan Hewan (SKKH), fitur tawar-menawar langsung, patungan kurban 7 orang, hingga layanan <strong class="text-white">Titip Rawat Kandang Virtual</strong> sampai hari-H.
+          </p>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <button onclick="document.getElementById('filter-bar').scrollIntoView({behavior:'smooth'})" class="px-4 py-2.5 bg-white text-brand-800 hover:bg-emerald-50 font-bold text-sm rounded-xl shadow-sm transition-colors">
+              Jelajahi Ternak Tersedia
+            </button>
+            <button onclick="switchTab('patungan')" class="px-4 py-2.5 bg-brand-900/40 hover:bg-brand-900/60 text-white font-semibold text-sm rounded-xl border border-white/25 transition-colors">
+              Ikut Patungan Kurban 1/7
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ecosystem Quick Stats Strip -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-extrabold text-slate-900" id="stat-total-ternak">8 Ekor</div>
+            <div class="text-xs text-slate-500">Tersertifikasi SKKH</div>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-extrabold text-slate-900">14 Kandang</div>
+            <div class="text-xs text-slate-500">Peternak Terverifikasi KYC</div>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-extrabold text-brand-700" id="stat-escrow-card">Rp 26,4 Jt</div>
+            <div class="text-xs text-slate-500">Dana Aman di Escrow</div>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+          </div>
+          <div>
+            <div class="text-lg font-extrabold text-slate-900">23 Kab/Kota</div>
+            <div class="text-xs text-slate-500">Armada Angkut Khusus</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Filter Bar -->
+      <div id="filter-bar" class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <svg class="w-5 h-5 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+            <span>Filter Pencarian Cerdas</span>
+          </h2>
+          <button onclick="resetFilters()" class="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline">
+            Reset Semua Filter
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Jenis & Ras Ternak</label>
+            <select id="filter-jenis" onchange="renderCatalog()" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600 font-medium text-slate-700">
+              <option value="Semua">Semua Jenis Ternak</option>
+              <option value="Sapi Aceh">Sapi Aceh</option>
+              <option value="Sapi Limosin">Sapi Limosin</option>
+              <option value="Kerbau">Kerbau</option>
+              <option value="Kambing Etawa">Kambing Etawa</option>
+              <option value="Domba">Domba</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Peruntukan Ibadah / Kebutuhan</label>
+            <select id="filter-peruntukan" onchange="renderCatalog()" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600 font-medium text-slate-700">
+              <option value="Semua">Semua Peruntukan</option>
+              <option value="Kurban">Kurban (Iduladha)</option>
+              <option value="Akikah">Akikah Anak</option>
+              <option value="Meugang / Potong">Meugang / Potong</option>
+              <option value="Penggemukan">Bakalan / Penggemukan</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Lokasi Kandang (Kab/Kota)</label>
+            <select id="filter-lokasi" onchange="renderCatalog()" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600 font-medium text-slate-700">
+              <option value="Semua">Seluruh Aceh</option>
+              <option value="Banda Aceh">Banda Aceh</option>
+              <option value="Aceh Besar">Aceh Besar</option>
+              <option value="Pidie">Pidie</option>
+              <option value="Bireuen">Bireuen</option>
+              <option value="Aceh Tengah">Aceh Tengah</option>
+              <option value="Lhokseumawe">Lhokseumawe</option>
+              <option value="Meulaboh">Meulaboh</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Urutkan Berdasarkan</label>
+            <select id="filter-sort" onchange="renderCatalog()" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600 font-medium text-slate-700">
+              <option value="terbaru">Terbaru Masuk Kandang</option>
+              <option value="harga-rendah">Harga Terendah</option>
+              <option value="bobot-berat">Bobot Terberat (kg)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Category Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
+          <span class="text-xs font-semibold text-slate-400 shrink-0">Populer:</span>
+          <button onclick="quickFilter('peruntukan', 'Kurban')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-800 hover:bg-brand-100 border border-brand-200 shrink-0 transition-colors">
+            Siap Kurban (Poel)
+          </button>
+          <button onclick="quickFilter('peruntukan', 'Meugang / Potong')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-800 hover:bg-brand-100 border border-brand-200 shrink-0 transition-colors">
+            Daging Meugang Aceh
+          </button>
+          <button onclick="quickFilter('peruntukan', 'Akikah')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-800 hover:bg-brand-100 border border-brand-200 shrink-0 transition-colors">
+            Paket Akikah
+          </button>
+          <button onclick="quickFilter('jenis', 'Sapi Aceh')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition-colors">
+            Sapi Aceh Asli
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Count Header -->
+      <div class="flex items-center justify-between">
+        <p class="text-sm text-slate-600">
+          Menampilkan <span id="catalog-count" class="font-bold text-slate-900">8</span> hewan ternak terverifikasi
+        </p>
+        <div class="text-xs text-slate-500 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+          <span>Harga transparan: Per Ekor & Estimasi Timbang Hidup/kg</span>
+        </div>
+      </div>
+
+      <!-- Livestock Cards Grid -->
+      <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: PATUNGAN KURBAN (1/7 SLOT) ==================== -->
+    <section id="view-patungan" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 border border-emerald-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1.5">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-800 text-xs font-bold border border-brand-200">
+              Program Kurban Kolektif Syariah
+            </span>
+            <h2 class="text-2xl font-extrabold text-slate-900">Patungan Kurban Sapi & Kerbau (Maksimal 7 Peserta)</h2>
+            <p class="text-sm text-slate-600 max-w-2xl">
+              Sesuai tuntunan syariat, 1 ekor sapi atau kerbau yang telah cukup umur (<em>poel</em>) dapat dikurbankan untuk maksimal 7 orang. Pilih slot yang masih kosong, pantau peserta lain secara transparan, dan terima laporan penyembelihan.
+            </p>
+          </div>
+          <div class="bg-brand-50 p-4 rounded-2xl border border-brand-200 shrink-0">
+            <div class="text-xs font-semibold text-brand-800">Keunggulan Patungan TernakAceh:</div>
+            <ul class="text-xs text-brand-900 mt-1.5 space-y-1">
+              <li>✓ Kuota otomatis terkunci saat 7/7 terisi</li>
+              <li>✓ Dana aman di Escrow sampai hari-H</li>
+              <li>✓ Bisa titip rawat di kandang peternak</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="patungan-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Populated dynamically with interactive 7-slot visualizations -->
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: PESANAN & KANDANG VIRTUAL ==================== -->
+    <section id="view-pesanan" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900">Pesanan Saya & Kandang Virtual</h2>
+          <p class="text-sm text-slate-600">Pantau status escrow, laporan pertumbuhan ternak titip rawat, hingga konfirmasi timbang ulang saat serah terima.</p>
+        </div>
+        <button onclick="switchTab('katalog')" class="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-sm font-semibold rounded-xl shadow-sm self-start">
+          <span>+ Beli / Titip Ternak Baru</span>
+        </button>
+      </div>
+
+      <div id="orders-list" class="space-y-5">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: PORTAL PETERNAK (JUAL & STOK) ==================== -->
+    <section id="view-peternak" class="hidden space-y-8">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl font-extrabold text-slate-900">Portal Peternak & Kandang Mitra</h2>
+            <span class="px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-800 text-xs font-bold">Akun KYC Terverifikasi</span>
+          </div>
+          <p class="text-sm text-slate-600 mt-1">Tambahkan stok ternak baru lengkap dengan 4 sudut foto & kondisi gigi, serta perbarui status ketersediaan kandang secara real-time.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Form Tambah Ternak Baru -->
+        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm h-fit">
+          <h3 class="text-lg font-bold text-slate-900 mb-1">Tambah Listing Ternak Baru</h3>
+          <p class="text-xs text-slate-500 mb-5">Ternak yang ditambahkan akan langsung tayang di Katalog Ternak.</p>
+
+          <form id="farmer-add-form" onsubmit="handleAddLivestock(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nama / Julukan Ternak *</label>
+              <input type="text" id="f-nama" required placeholder="Contoh: Sapi Aceh Jantan — Meurah Seulawah" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Ternak *</label>
+                <select id="f-jenis" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600">
+                  <option value="Sapi Aceh">Sapi Aceh</option>
+                  <option value="Sapi Limosin">Sapi Limosin</option>
+                  <option value="Kerbau">Kerbau</option>
+                  <option value="Kambing Etawa">Kambing Etawa</option>
+                  <option value="Domba">Domba</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Peruntukan Utama *</label>
+                <select id="f-peruntukan" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600">
+                  <option value="Kurban">Kurban</option>
+                  <option value="Akikah">Akikah</option>
+                  <option value="Meugang / Potong">Meugang / Potong</option>
+                  <option value="Penggemukan">Penggemukan</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kabupaten / Kota *</label>
+                <select id="f-lokasi" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600">
+                  <option value="Aceh Besar">Aceh Besar</option>
+                  <option value="Banda Aceh">Banda Aceh</option>
+                  <option value="Pidie">Pidie</option>
+                  <option value="Bireuen">Bireuen</option>
+                  <option value="Aceh Tengah">Aceh Tengah</option>
+                  <option value="Lhokseumawe">Lhokseumawe</option>
+                  <option value="Meulaboh">Meulaboh</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin *</label>
+                <select id="f-kelamin" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600">
+                  <option value="Jantan">Jantan</option>
+                  <option value="Betina">Betina</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Estimasi Bobot (kg) *</label>
+                <input type="number" id="f-bobot" required min="15" max="1200" value="310" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Usia & Status Gigi *</label>
+                <input type="text" id="f-usia" required value="2.5 Tahun (Poel 1)" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Harga Per Ekor (Rp) *</label>
+                <input type="number" id="f-harga" required min="500000" step="50000" value="21000000" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Sertifikat SKKH *</label>
+                <input type="text" id="f-skkh" required value="SKKH-ACH-2026-089" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kandang / Peternak *</label>
+              <input type="text" id="f-peternak" required value="Kandang Darussalam Agro (Tgk. Hasan)" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+            </div>
+
+            <!-- 4 SLOT UNGGAH FOTO WAJIB SESUAI ARAH & GIGI -->
+            <div class="p-4 rounded-2xl bg-brand-50/60 border border-emerald-200 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <label class="block text-xs font-extrabold text-slate-900">Unggah 4 Foto Wajib (Arah Sudut & Gigi) *</label>
+                  <p class="text-[11px] text-slate-500">Wajib lengkap 4 sudut untuk verifikasi kesehatan & kelayakan.</p>
+                </div>
+                <span id="photo-completeness-badge" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                  0/4 Foto Terunggah
+                </span>
+              </div>
+
+              <!-- Tombol Cepat Contoh Foto Otomatis -->
+              <div class="flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-emerald-200/80">
+                <span class="text-[11px] text-slate-600">Belum siap file foto di perangkat?</span>
+                <button type="button" onclick="fillAutoSamplePhotos()" class="px-2.5 py-1.5 rounded-lg bg-brand-100 hover:bg-brand-200 text-brand-900 text-[11px] font-bold transition-colors shrink-0">
+                  ✨ Isi Contoh Foto Otomatis
+                </button>
+              </div>
+
+              <!-- Grid 2x2 Slot Foto Terstruktur -->
+              <div id="farmer-photo-slots-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Dirender dinamis oleh renderPhotoUploadSlots() -->
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-1">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="f-patungan" checked class="w-4 h-4 rounded text-brand-700 focus:ring-brand-600" />
+                <span class="text-xs font-semibold text-slate-700">Aktifkan opsi Patungan Kurban (7 Slot)</span>
+              </label>
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="f-titip" checked class="w-4 h-4 rounded text-brand-700 focus:ring-brand-600" />
+                <span class="text-xs font-semibold text-slate-700">Sediakan layanan Titip Rawat (Kandang Virtual)</span>
+              </label>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-brand-700 hover:bg-brand-800 text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-900/10 transition-colors">
+              Terbitkan ke Katalog TernakAceh
+            </button>
+          </form>
+        </div>
+
+        <!-- Tabel Manajemen Stok Kandang -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Manajemen Stok Kandang Real-Time</h3>
+              <p class="text-xs text-slate-500">Ubah status ternak secara langsung untuk mencegah pemesanan ganda.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-brand-50 text-brand-800 text-xs font-bold" id="farmer-stock-count">8 Listing</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <th class="py-3 pr-3">Hewan Ternak</th>
+                  <th class="py-3 px-3">Bobot & Harga</th>
+                  <th class="py-3 px-3">SKKH</th>
+                  <th class="py-3 pl-3 text-right">Status Kandang</th>
+                </tr>
+              </thead>
+              <tbody id="farmer-stock-tbody" class="divide-y divide-slate-100 text-sm">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: VERIFIKASI & ESCROW (ADMIN) ==================== -->
+    <section id="view-admin" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h2 class="text-2xl font-extrabold text-slate-900">Panel Moderasi, Verifikasi SKKH & Escrow Syariah</h2>
+        <p class="text-sm text-slate-600 mt-1">Pusat kendali pengelola platform TernakAceh untuk validasi identitas kandang (KYC), keabsahan sertifikat dokter hewan (SKKH), dan pengawasan dana transaksi.</p>
+
+        <!-- Admin Escrow Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
+          <div class="p-4 rounded-2xl bg-brand-50 border border-brand-200">
+            <div class="text-xs font-semibold text-brand-800">Dana Tertahan di Rekening Escrow</div>
+            <div id="admin-escrow-held" class="text-2xl font-extrabold text-brand-900 mt-1">Rp 26.450.000</div>
+            <div class="text-[11px] text-brand-700 mt-1">Menunggu konfirmasi timbang ulang pembeli</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-semibold text-slate-600">Dana Berhasil Dicairkan ke Peternak</div>
+            <div id="admin-escrow-released" class="text-2xl font-extrabold text-slate-900 mt-1">Rp 148.500.000</div>
+            <div class="text-[11px] text-slate-500 mt-1">100% serah terima sesuai standar bobot</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200">
+            <div class="text-xs font-semibold text-amber-800">Antrean Verifikasi KYC & SKKH</div>
+            <div id="admin-queue-count" class="text-2xl font-extrabold text-amber-900 mt-1">2 Pengajuan</div>
+            <div class="text-[11px] text-amber-700 mt-1">Perlu tinjauan dokumen sebelum tayang</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Antrean Moderasi KYC & SKKH -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-900 mb-4">Validasi Kandang (KYC) & Dokumen Kesehatan (SKKH)</h3>
+        <div id="admin-verification-list" class="space-y-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2.5">
+        <span class="font-extrabold text-slate-800 text-sm">Ternak<span class="text-brand-700">Aceh</span></span>
+        <span>•</span>
+        <span>Ekosistem Digital Peternakan & Ibadah Kurban/Akikah Provinsi Aceh</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <span>Standar SKKH Dinas Peternakan</span>
+        <span>•</span>
+        <span>Rekening Bersama Syariah</span>
+        <span>•</span>
+        <span>© 2026 TernakAceh</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL 1: DETAIL TERNAK, BUKTI KESEHATAN & CHAT NEGO ==================== -->
+  <div id="modal-detail" class="fixed inset-0 z-40 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 flex items-center justify-center">
+    <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-modal my-auto">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span id="detail-badge-jenis" class="px-2.5 py-1 rounded-lg bg-brand-100 text-brand-800 text-xs font-bold shrink-0">Sapi Aceh</span>
+          <h3 id="detail-title" class="text-base sm:text-lg font-extrabold text-slate-900 truncate">Nama Ternak</h3>
+        </div>
+        <button onclick="closeModal('modal-detail')" class="w-9 h-9 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="grid grid-cols-1 lg:grid-cols-12">
+        <!-- Left Column: Visual Inspection Gallery -->
+        <div class="lg:col-span-6 p-6 bg-brand-50/40 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col justify-between">
+          <div>
+            <!-- Visual Display Canvas -->
+            <div id="detail-visual-stage" class="bg-white rounded-2xl border border-emerald-200/80 p-5 h-64 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+              <!-- Populated dynamically -->
+            </div>
+
+            <!-- 4 Inspection Angle Buttons -->
+            <div class="grid grid-cols-4 gap-1.5 sm:gap-2 mt-3">
+              <button onclick="switchInspectionView('samping')" id="insp-btn-samping" class="insp-btn p-2 rounded-xl border-2 border-brand-600 bg-brand-50 text-brand-800 text-[11px] font-bold text-center transition-all">
+                1. Tampak Samping
+              </button>
+              <button onclick="switchInspectionView('depan')" id="insp-btn-depan" class="insp-btn p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-[11px] font-semibold text-center transition-all">
+                2. Tampak Depan
+              </button>
+              <button onclick="switchInspectionView('gigi')" id="insp-btn-gigi" class="insp-btn p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-[11px] font-semibold text-center transition-all">
+                3. Kondisi Gigi (Poel)
+              </button>
+              <button onclick="switchInspectionView('belakang')" id="insp-btn-belakang" class="insp-btn p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-[11px] font-semibold text-center transition-all">
+                4. Belakang & Kaki
+              </button>
+            </div>
+
+            <!-- Keterangan Sudut Inspeksi Aktif -->
+            <div id="detail-visual-caption" class="mt-2.5 px-3 py-2 rounded-xl bg-white border border-emerald-200/80 text-[11px] text-slate-700 font-medium">
+              <strong>1. Tampak Samping:</strong> Memperlihatkan postur panjang, tinggi badan, dan proporsi daging ternak.
+            </div>
+          </div>
+
+          <!-- Key Specs Grid -->
+          <div class="grid grid-cols-3 gap-2.5 mt-5 pt-4 border-t border-emerald-200/60">
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200/70">
+              <div class="text-[11px] text-slate-500">Estimasi Bobot</div>
+              <div id="detail-bobot" class="text-sm font-extrabold text-slate-900">320 kg</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200/70">
+              <div class="text-[11px] text-slate-500">Usia / Gigi</div>
+              <div id="detail-usia" class="text-sm font-extrabold text-slate-900">2.5 Thn (Poel 1)</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200/70">
+              <div class="text-[11px] text-slate-500">Harga / kg Hidup</div>
+              <div id="detail-harga-kg" class="text-sm font-extrabold text-brand-700">Rp 67.200</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Tabs (Spesifikasi & SKKH vs Chat & Nego Harga) -->
+        <div class="lg:col-span-6 p-6 flex flex-col justify-between max-h-[80vh] overflow-y-auto">
+          <div>
+            <!-- Sub-navigation Tabs -->
+            <div class="flex gap-2 p-1 bg-slate-100 rounded-xl mb-4">
+              <button onclick="switchDetailSubtab('info')" id="subtab-btn-info" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white text-brand-800 shadow-sm transition-all">
+                Info & Sertifikat SKKH
+              </button>
+              <button onclick="switchDetailSubtab('nego')" id="subtab-btn-nego" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5">
+                <span>Chat & Tawar Harga (Nego)</span>
+                <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+              </button>
+            </div>
+
+            <!-- SUBTAB A: INFO & SKKH -->
+            <div id="detail-subtab-info" class="space-y-4">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="text-xs text-slate-500">Harga Penawaran Peternak</div>
+                  <div id="detail-harga" class="text-2xl font-extrabold text-brand-700">Rp 21.500.000</div>
+                </div>
+                <div id="detail-deal-pill" class="hidden px-3 py-1.5 rounded-xl bg-brand-100 border border-brand-300 text-brand-900 text-xs font-bold">
+                  Harga Deal Nego Aktif!
+                </div>
+              </div>
+
+              <!-- Peternak Card -->
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-brand-700 text-white font-bold flex items-center justify-center text-sm">
+                    PA
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <span id="detail-peternak" class="text-sm font-bold text-slate-900">Tgk. Sulaiman</span>
+                      <span class="px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 text-[10px] font-bold">✓ KYC</span>
+                    </div>
+                    <div id="detail-lokasi" class="text-xs text-slate-500">Aceh Besar</div>
+                  </div>
+                </div>
+                <button onclick="switchDetailSubtab('nego')" class="px-3 py-1.5 rounded-xl bg-white border border-brand-200 text-brand-700 hover:bg-brand-50 text-xs font-bold transition-colors">
+                  Tawar Harga
+                </button>
+              </div>
+
+              <!-- Sertifikat SKKH Box -->
+              <div class="p-4 rounded-2xl bg-brand-50/70 border border-brand-200 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-extrabold text-brand-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    Surat Keterangan Kesehatan Hewan (SKKH)
+                  </span>
+                  <span id="detail-skkh-no" class="text-xs font-mono font-bold text-brand-800 bg-white px-2 py-0.5 rounded border border-brand-200">SKKH-001</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs text-slate-700">
+                  <div class="bg-white/80 p-2 rounded-lg">✓ Vaksin PMK & Antraks: <strong>Lengkap</strong></div>
+                  <div class="bg-white/80 p-2 rounded-lg">✓ Obat Cacing: <strong>Rutin 3 Bln</strong></div>
+                  <div class="bg-white/80 p-2 rounded-lg">✓ Kondisi Fisik: <strong>Sehat, Tidak Cacat</strong></div>
+                  <div class="bg-white/80 p-2 rounded-lg">✓ Syarat Syar'i: <strong id="detail-syari">Sah Kurban & Meugang</strong></div>
+                </div>
+              </div>
+
+              <p id="detail-deskripsi" class="text-xs text-slate-600 leading-relaxed">
+                Deskripsi lengkap ternak.
+              </p>
+            </div>
+
+            <!-- SUBTAB B: CHAT & NEGO HARGA -->
+            <div id="detail-subtab-nego" class="hidden space-y-3">
+              <!-- Chat Messages Container -->
+              <div id="nego-chat-box" class="h-56 overflow-y-auto p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3 text-xs">
+                <!-- Messages injected dynamically -->
+              </div>
+
+              <!-- Quick Offer Input -->
+              <div class="p-3 bg-brand-50 rounded-2xl border border-brand-200 space-y-2">
+                <label class="block text-[11px] font-bold text-brand-900">Ajukan Penawaran Harga Resmi (Rp)</label>
+                <div class="flex gap-2">
+                  <input type="number" id="nego-offer-input" step="50000" placeholder="Masukkan nominal tawaran..." class="flex-1 px-3 py-2 text-xs font-bold bg-white border border-brand-200 rounded-xl focus:outline-none focus:border-brand-600" />
+                  <button onclick="submitNegoOffer()" class="px-3.5 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl transition-colors shrink-0">
+                    Kirim Nego
+                  </button>
+                </div>
+              </div>
+
+              <!-- Regular Chat Input -->
+              <form onsubmit="sendChatMessage(event)" class="flex gap-2">
+                <input type="text" id="chat-msg-input" placeholder="Tanya kondisi pakan, video kandang, atau jadwal kirim..." class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+                <button type="submit" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl">
+                  Kirim
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Modal Footer CTA -->
+          <div class="pt-4 mt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-2.5">
+            <button onclick="openCheckoutFromDetail()" id="detail-checkout-btn" class="flex-1 py-3 px-4 bg-brand-700 hover:bg-brand-800 text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-900/10 transition-colors flex items-center justify-center gap-2">
+              <span>Lanjut Pemesanan & Escrow</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: CHECKOUT LENGKAP (ESCROW, DP, PATUNGAN, TITIP RAWAT, ONGKIR) ==================== -->
+  <div id="modal-checkout" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 flex items-center justify-center">
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-modal my-auto">
+      <div class="px-6 py-4 bg-brand-800 text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-extrabold">Checkout & Akad Transaksi Syariah</h3>
+          <p class="text-xs text-emerald-100">Dana ditahan aman di Escrow hingga ternak diterima & ditimbang ulang</p>
+        </div>
+        <button onclick="closeModal('modal-checkout')" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 max-h-[82vh] overflow-y-auto">
+        <!-- Ringkasan Hewan -->
+        <div class="p-4 rounded-2xl bg-brand-50 border border-brand-200 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="text-xs font-semibold text-brand-700" id="co-peternak">Peternak</div>
+            <div class="text-base font-extrabold text-slate-900" id="co-nama">Nama Ternak</div>
+            <div class="text-xs text-slate-600" id="co-specs">Bobot • Lokasi</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-slate-500">Harga Acuan</div>
+            <div class="text-lg font-extrabold text-brand-800" id="co-base-price">Rp 0</div>
+          </div>
+        </div>
+
+        <!-- 1. Skema Pembelian -->
+        <div class="space-y-2.5">
+          <label class="block text-sm font-bold text-slate-800">1. Pilih Skema Pembelian</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <label class="cursor-pointer border-2 rounded-2xl p-3 transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/60 border-slate-200">
+              <input type="radio" name="co-scheme" value="full" checked onchange="recalculateCheckout()" class="sr-only" />
+              <div class="text-xs font-extrabold text-slate-900">Bayar Penuh (1 Ekor)</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Kepemilikan penuh 100%</div>
+            </label>
+
+            <label class="cursor-pointer border-2 rounded-2xl p-3 transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/60 border-slate-200">
+              <input type="radio" name="co-scheme" value="dp" onchange="recalculateCheckout()" class="sr-only" />
+              <div class="text-xs font-extrabold text-slate-900">Booking / Uang Muka DP (30%)</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Kunci stok, lunas saat tiba</div>
+            </label>
+
+            <label id="co-patungan-option" class="cursor-pointer border-2 rounded-2xl p-3 transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/60 border-slate-200">
+              <input type="radio" name="co-scheme" value="patungan" onchange="recalculateCheckout()" class="sr-only" />
+              <div class="text-xs font-extrabold text-brand-800">Patungan Kurban (1/7 Slot)</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Kolektif 7 peserta syar'i</div>
+            </label>
+          </div>
+
+          <!-- Visualisasi 7 Slot Patungan Kurban -->
+          <div id="co-patungan-box" class="hidden p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800">Pilih Slot Peserta Kurban Anda (Bisa lebih dari 1 slot):</span>
+              <span id="co-slot-selected-info" class="text-xs font-bold text-brand-700">1 Slot Dipilih</span>
+            </div>
+            <div id="co-slots-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <!-- 7 slots injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Layanan Titip Rawat (Kandang Virtual) -->
+        <div class="p-4 rounded-2xl border border-slate-200 bg-white space-y-3">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="co-titip-check" onchange="recalculateCheckout()" class="mt-1 w-4 h-4 rounded text-brand-700 focus:ring-brand-600" />
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-bold text-slate-900">Aktifkan Layanan Titip Rawat (Kandang Virtual)</span>
+                <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-800 text-[10px] font-bold">Rekomendasi</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Titipkan ternak di kandang peternak hingga hari-H (Iduladha/Meugang). Anda mendapat laporan foto & kenaikan bobot mingguan.</p>
+            </div>
+          </label>
+
+          <div id="co-titip-options" class="hidden pt-2 pl-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Durasi Titip Rawat</label>
+              <select id="co-titip-days" onchange="recalculateCheckout()" class="w-full px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl">
+                <option value="14">14 Hari (2 Minggu)</option>
+                <option value="30" selected>30 Hari (1 Bulan)</option>
+                <option value="60">60 Hari (2 Bulan)</option>
+              </select>
+            </div>
+            <div class="bg-brand-50 p-2.5 rounded-xl border border-brand-100 flex flex-col justify-center">
+              <div class="text-[11px] text-brand-800">Biaya Pakan & Vitamin Harian:</div>
+              <div id="co-titip-rate-text" class="text-xs font-extrabold text-brand-900">Rp 25.000 / hari</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Kalkulator Logistik & Pengiriman -->
+        <div class="p-4 rounded-2xl border border-slate-200 bg-white space-y-3">
+          <label class="block text-sm font-bold text-slate-800">2. Metode Pengiriman & Kalkulator Ongkir</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Armada Pengangkutan</label>
+              <select id="co-shipping-method" onchange="recalculateCheckout()" class="w-full px-3 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl">
+                <option value="pickup">Ambil Sendiri di Kandang (Gratis)</option>
+                <option value="farmer" selected>Armada Kandang Peternak</option>
+                <option value="mitra">Mitra Pikap / Truk Khusus Ternak</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Kabupaten / Kota Tujuan</label>
+              <select id="co-shipping-dest" onchange="recalculateCheckout()" class="w-full px-3 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl">
+                <option value="Banda Aceh">Banda Aceh</option>
+                <option value="Aceh Besar">Aceh Besar</option>
+                <option value="Pidie">Pidie</option>
+                <option value="Bireuen">Bireuen</option>
+                <option value="Lhokseumawe">Lhokseumawe</option>
+                <option value="Aceh Tengah">Aceh Tengah</option>
+                <option value="Meulaboh">Meulaboh</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200/80">
+            <span id="co-shipping-info" class="text-slate-600">Estimasi jarak antar-kabupaten Aceh</span>
+            <span id="co-shipping-cost" class="font-extrabold text-slate-900">Rp 250.000</span>
+          </div>
+        </div>
+
+        <!-- 4. Add-on Jasa Jagal & Katering Akikah -->
+        <div class="p-4 rounded-2xl border border-slate-200 bg-white space-y-2.5">
+          <label class="block text-sm font-bold text-slate-800">3. Layanan Lanjutan (Opsional)</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="checkbox" id="co-addon-jagal" onchange="recalculateCheckout()" class="w-4 h-4 rounded text-brand-700" />
+              <div class="text-xs">
+                <div class="font-bold text-slate-800">Jasa Jagal Syar'i & Cacah</div>
+                <div class="text-slate-500">+ Rp 350.000 (Siap bagi)</div>
+              </div>
+            </label>
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              <input type="checkbox" id="co-addon-katering" onchange="recalculateCheckout()" class="w-4 h-4 rounded text-brand-700" />
+              <div class="text-xs">
+                <div class="font-bold text-slate-800">Masak Kuah Beulangong / Akikah</div>
+                <div class="text-slate-500">+ Rp 1.250.000 (60 porsi)</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Ringkasan Pembayaran Escrow -->
+        <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-2">
+          <div class="flex justify-between text-xs text-slate-300">
+            <span id="co-summary-label">Harga Ternak (Bayar Penuh)</span>
+            <span id="co-summary-ternak">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-300">
+            <span>Biaya Titip Rawat Kandang Virtual</span>
+            <span id="co-summary-titip">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-300">
+            <span>Ongkos Kirim Armada Ternak</span>
+            <span id="co-summary-ongkir">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-300">
+            <span>Jasa Jagal / Katering Tambahan</span>
+            <span id="co-summary-addon">Rp 0</span>
+          </div>
+          <div class="pt-2 border-t border-slate-700 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-emerald-400 font-semibold">Total Transfer ke Escrow Syariah</div>
+              <div class="text-[11px] text-slate-400">Bank Aceh Syariah / BSI Virtual Account</div>
+            </div>
+            <div id="co-summary-total" class="text-xl font-extrabold text-white">Rp 0</div>
+          </div>
+        </div>
+
+        <button onclick="confirmCheckoutOrder()" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-emerald-900/20 transition-all">
+          Bayar Sekarang & Amankan Dana di Escrow
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: MONITORING KANDANG VIRTUAL ==================== -->
+  <div id="modal-virtual-barn" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 flex items-center justify-center">
+    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-modal my-auto">
+      <div class="px-6 py-4 bg-brand-800 text-white flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded">Live Monitoring</span>
+          <h3 id="vb-title" class="text-lg font-extrabold mt-0.5">Kandang Virtual — Perkembangan Ternak</h3>
+        </div>
+        <button onclick="closeModal('modal-virtual-barn')" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+        <div class="grid grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] text-slate-500">Bobot Awal Akad</div>
+            <div id="vb-initial-weight" class="text-lg font-extrabold text-slate-900">320 kg</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-brand-50 border border-brand-200">
+            <div class="text-[11px] text-brand-800">Bobot Terkini</div>
+            <div id="vb-current-weight" class="text-lg font-extrabold text-brand-700">334 kg (+14 kg)</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] text-slate-500">Status Kesehatan</div>
+            <div class="text-sm font-extrabold text-brand-700 mt-0.5">Prima & Aktif</div>
+          </div>
+        </div>
+
+        <!-- Timeline Laporan Peternak -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-slate-800">Log Laporan Perawatan & Pakan Berkala</h4>
+          <div id="vb-logs-container" class="space-y-3 border-l-2 border-brand-300 ml-2 pl-4">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Simulasi Tambah Update dari Peternak -->
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between gap-3">
+          <span class="text-xs text-slate-500">Ingin meminta pembaruan timbang hari ini?</span>
+          <button onclick="simulateNewBarnLog()" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl transition-colors">
+            + Simulasi Laporan Terbaru Peternak
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: KONFIRMASI SERAH TERIMA & TIMBANG ULANG ==================== -->
+  <div id="modal-handover" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 flex items-center justify-center">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-modal my-auto">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-extrabold">Konfirmasi Serah Terima & Timbang Ulang</h3>
+          <p class="text-xs text-slate-300">Pencairan dana Escrow hanya dilakukan setelah Anda menyetujui kondisi ternak</p>
+        </div>
+        <button onclick="closeModal('modal-handover')" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">✕</button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div class="p-3.5 rounded-2xl bg-brand-50 border border-brand-200">
+          <div id="ho-order-name" class="text-sm font-extrabold text-slate-900">Nama Ternak</div>
+          <div class="text-xs text-slate-600 mt-0.5">Bobot Tercatat di Akad: <strong id="ho-expected-weight">320 kg</strong></div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Masukkan Bobot Aktual Saat Tiba di Lokasi (kg) *</label>
+          <input type="number" id="ho-actual-weight" oninput="evaluateWeightShrinkage()" class="w-full px-3.5 py-2.5 text-sm font-bold bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-600" />
+          <p id="ho-weight-feedback" class="text-xs mt-1.5 font-semibold text-brand-700">✓ Bobot sesuai toleransi penyusutan perjalanan (&lt; 5%).</p>
+        </div>
+
+        <div class="space-y-2 text-xs text-slate-700">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="ho-check-health" checked class="w-4 h-4 rounded text-brand-700" />
+            <span>Hewan tiba dalam keadaan sehat, tidak pincang, dan tidak cacat fisik.</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="ho-check-skkh" checked class="w-4 h-4 rounded text-brand-700" />
+            <span>Dokumen fisik SKKH & identitas ternak sesuai dengan aplikasi.</span>
+          </label>
+        </div>
+
+        <div class="pt-2 flex flex-col gap-2">
+          <button onclick="completeEscrowRelease()" class="w-full py-3 bg-brand-700 hover:bg-brand-800 text-white font-bold text-sm rounded-xl shadow-md transition-colors">
+            Konfirmasi Terima & Cairkan Dana Escrow ke Peternak
+          </button>
+          <button id="ho-dispute-btn" onclick="openEscrowDispute()" class="hidden w-full py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs rounded-xl transition-colors">
+            Ajukan Mediasi Penyusutan Bobot ke Admin Escrow
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION STATE & INTERACTIVE LOGIC -->
+  <script>
+    // ==================== 1. DATA & STATE MANAGEMENT ====================
+    let livestockData = [
+      {
+        id: 'TRN-01',
+        nama: 'Sapi Aceh Jantan Unggul — "Bintang Seulawah"',
+        jenis: 'Sapi Aceh',
+        peruntukan: 'Kurban',
+        lokasi: 'Aceh Besar',
+        kecamatan: 'Seulimeum',
+        bobot: 320,
+        usia: '2.5 Tahun (Poel 1)',
+        kelamin: 'Jantan',
+        harga: 21500000,
+        peternak: 'Tgk. Sulaiman (Seulawah Farm)',
+        kyc: true,
+        skkh: 'SKKH-ACH-2026-014',
+        status: 'Tersedia',
+        patungan: true,
+        slots: [
+          { no: 1, name: 'Ahmad Fauzi (Banda Aceh)', paid: true },
+          { no: 2, name: 'Cut Putri Rahmah (Aceh Besar)', paid: true },
+          { no: 3, name: 'Dr. Zulfikar (Banda Aceh)', paid: true },
+          { no: 4, name: 'Hj. Nurhayati (Sigli)', paid: true },
+          { no: 5, name: 'Teuku Reza (Banda Aceh)', paid: true },
+          { no: 6, name: null, paid: false },
+          { no: 7, name: null, paid: false }
+        ],
+        titipRawat: true,
+        photos: null,
+        colorHex: '#9A3412',
+        deskripsi: 'Sapi Aceh asli ras unggulan dengan postur padat, punuk proporsional, dan pakan hijauan alami pegunungan Seulawah. Telah masuk poel 1 sehingga sah untuk ibadah kurban maupun tradisi Meugang.'
+      },
+      {
+        id: 'TRN-02',
+        nama: 'Sapi Limosin Cross Jumbo — "Sultan Gayo"',
+        jenis: 'Sapi Limosin',
+        peruntukan: 'Kurban',
+        lokasi: 'Aceh Tengah',
+        kecamatan: 'Bebesen, Takengon',
+        bobot: 540,
+        usia: '3 Tahun (Poel 2)',
+        kelamin: 'Jantan',
+        harga: 36800000,
+        peternak: 'Bang Hendra (Gayo Highland Cattle)',
+        kyc: true,
+        skkh: 'SKKH-ATG-2026-042',
+        status: 'Tersedia',
+        patungan: true,
+        slots: [
+          { no: 1, name: 'H. Bustamam (Takengon)', paid: true },
+          { no: 2, name: 'Rizky Ananda (Bireuen)', paid: true },
+          { no: 3, name: 'Siti Aminah (Banda Aceh)', paid: true },
+          { no: 4, name: null, paid: false },
+          { no: 5, name: null, paid: false },
+          { no: 6, name: null, paid: false },
+          { no: 7, name: null, paid: false }
+        ],
+        titipRawat: true,
+        photos: null,
+        colorHex: '#7C2D12',
+        deskripsi: 'Sapi Limosin cross bobot jumbo dari dataran tinggi Gayo. Persentase karkas daging sangat tinggi (di atas 52%), cocok untuk kurban jamaah masjid atau keluarga besar.'
+      },
+      {
+        id: 'TRN-03',
+        nama: 'Kerbau Kalang Aceh — "Meugang Raya"',
+        jenis: 'Kerbau',
+        peruntukan: 'Meugang / Potong',
+        lokasi: 'Pidie',
+        kecamatan: 'Indrajaya, Sigli',
+        bobot: 460,
+        usia: '3.5 Tahun (Poel 2)',
+        kelamin: 'Jantan',
+        harga: 31000000,
+        peternak: 'H. Mukhtaruddin (Kandang Pidie Jaya)',
+        kyc: true,
+        skkh: 'SKKH-PID-2026-019',
+        status: 'Tersedia',
+        patungan: true,
+        slots: [
+          { no: 1, name: 'Tgk. Abdullah (Sigli)', paid: true },
+          { no: 2, name: 'M. Iqbal (Pidie)', paid: true },
+          { no: 3, name: 'Farhan Syah (Banda Aceh)', paid: true },
+          { no: 4, name: 'Nadia Safitri (Sigli)', paid: true },
+          { no: 5, name: 'H. Ramli (Beureunuen)', paid: true },
+          { no: 6, name: 'Ust. Mansur (Pidie)', paid: true },
+          { no: 7, name: null, paid: false }
+        ],
+        titipRawat: true,
+        photos: null,
+        colorHex: '#334155',
+        deskripsi: 'Kerbau jantan pilihan favorit masyarakat Pidie dan Aceh Besar untuk kebutuhan daging tradisi Meugang serta kurban. Serat daging merah segar dan padat.'
+      },
+      {
+        id: 'TRN-04',
+        nama: 'Kambing Peranakan Etawa — "Syawal Akikah"',
+        jenis: 'Kambing Etawa',
+        peruntukan: 'Akikah',
+        lokasi: 'Banda Aceh',
+        kecamatan: 'Syiah Kuala',
+        bobot: 42,
+        usia: '1.5 Tahun (Poel 1)',
+        kelamin: 'Jantan',
+        harga: 3850000,
+        peternak: 'Ust. Rizal (Darussalam Akikah Farm)',
+        kyc: true,
+        skkh: 'SKKH-BNA-2026-077',
+        status: 'Tersedia',
+        patungan: false,
+        slots: [],
+        titipRawat: true,
+        photos: null,
+        colorHex: '#D97706',
+        deskripsi: 'Kambing PE jantan sehat dan bersih, dipelihara khusus dengan pakan daun nangka, gamal, dan ampas tahu higienis. Tidak berbau prengus menyengat, ideal untuk akikah.'
+      },
+      {
+        id: 'TRN-05',
+        nama: 'Domba Ekor Gemuk Aceh — "Putih Krueng"',
+        jenis: 'Domba',
+        peruntukan: 'Akikah',
+        lokasi: 'Bireuen',
+        kecamatan: 'Kota Juang',
+        bobot: 36,
+        usia: '1.2 Tahun (Poel 1)',
+        kelamin: 'Jantan',
+        harga: 3200000,
+        peternak: 'Cut Mutia (Jeumpa Agro Ternak)',
+        kyc: true,
+        skkh: 'SKKH-BIR-2026-031',
+        status: 'Tersedia',
+        patungan: false,
+        slots: [],
+        titipRawat: false,
+        photos: null,
+        colorHex: '#64748B',
+        deskripsi: 'Domba jantan berbulu tebal bersih dengan bobot optimal untuk pelaksanaan akikah maupun syukuran keluarga. Tersedia layanan pengantaran langsung ke seluruh Bireuen dan Lhokseumawe.'
+      },
+      {
+        id: 'TRN-06',
+        nama: 'Sapi Aceh Tradisi Meugang — "Meurah Pase"',
+        jenis: 'Sapi Aceh',
+        peruntukan: 'Meugang / Potong',
+        lokasi: 'Lhokseumawe',
+        kecamatan: 'Muara Dua',
+        bobot: 295,
+        usia: '2.5 Tahun (Poel 1)',
+        kelamin: 'Jantan',
+        harga: 19800000,
+        peternak: 'Teuku Fadli (Samudera Pasai Farm)',
+        kyc: true,
+        skkh: 'SKKH-LSM-2026-053',
+        status: 'Tersedia',
+        patungan: true,
+        slots: [
+          { no: 1, name: 'Ir. Yusri (Lhokseumawe)', paid: true },
+          { no: 2, name: 'Rahmat Hidayat (Aceh Utara)', paid: true },
+          { no: 3, name: null, paid: false },
+          { no: 4, name: null, paid: false },
+          { no: 5, name: null, paid: false },
+          { no: 6, name: null, paid: false },
+          { no: 7, name: null, paid: false }
+        ],
+        titipRawat: true,
+        photos: null,
+        colorHex: '#B45309',
+        deskripsi: 'Sapi Aceh lokal berkualitas tinggi dengan tingkat lemak tipis dan rendemen daging maksimal. Siap potong untuk lapak Meugang maupun kurban.'
+      },
+      {
+        id: 'TRN-07',
+        nama: 'Bakalan Sapi Aceh Penggemukan — "Tunas Barat"',
+        jenis: 'Sapi Aceh',
+        peruntukan: 'Penggemukan',
+        lokasi: 'Meulaboh',
+        kecamatan: 'Johan Pahlawan',
+        bobot: 195,
+        usia: '1.2 Tahun',
+        kelamin: 'Jantan',
+        harga: 13200000,
+        peternak: 'Koperasi Tani Meulaboh Sejahtera',
+        kyc: true,
+        skkh: 'SKKH-MBO-2026-011',
+        status: 'Tersedia',
+        patungan: false,
+        slots: [],
+        titipRawat: true,
+        photos: null,
+        colorHex: '#92400E',
+        deskripsi: 'Bakalan sapi Aceh jantan muda dengan tulang besar dan nafsu makan sangat kuat. Cocok untuk program penggemukan 4-6 bulan menjelang musim hari raya.'
+      },
+      {
+        id: 'TRN-08',
+        nama: 'Kambing Kacang Lokal Super — "Bukit Barisan"',
+        jenis: 'Kambing Etawa',
+        peruntukan: 'Kurban',
+        lokasi: 'Aceh Besar',
+        kecamatan: 'Indrapuri',
+        bobot: 34,
+        usia: '1.4 Tahun (Poel 1)',
+        kelamin: 'Jantan',
+        harga: 3150000,
+        peternak: 'Abu Bakar (Indrapuri Livestock)',
+        kyc: true,
+        skkh: 'SKKH-ACH-2026-064',
+        status: 'Tersedia',
+        patungan: false,
+        slots: [],
+        titipRawat: true,
+        photos: null,
+        colorHex: '#78350F',
+        deskripsi: 'Kambing jantan lokal tangguh dari padang gembala Indrapuri. Sudah poel 1 pasang gigi seri permanen, memenuhi syarat sah kurban perseorangan.'
+      }
+    ];
+
+    // Active Orders State (with Kandang Virtual & Escrow tracking)
+    let userOrders = [
+      {
+        orderId: 'ORD-2026-881',
+        ternakId: 'TRN-01',
+        nama: 'Sapi Aceh Jantan Unggul — "Bintang Seulawah"',
+        peternak: 'Tgk. Sulaiman (Seulawah Farm)',
+        scheme: 'Bayar Penuh (1 Ekor) + Titip Rawat 30 Hari',
+        totalPaid: 22250000,
+        escrowStatus: 'Dana Aman di Escrow',
+        isEscrowReleased: false,
+        hasTitipRawat: true,
+        initialWeight: 320,
+        currentWeight: 334,
+        logs: [
+          { date: '10 Nov 2026', weight: 320, note: 'Serah terima awal ke Kandang Virtual. Pemberian vitamin B-Kompleks & obat cacing.', feed: 'Rumput Gajah + Dedak Padi' },
+          { date: '17 Nov 2026', weight: 327, note: 'Nafsu makan sangat baik (+7 kg dalam 7 hari). Suhu tubuh normal 38.5°C.', feed: 'Hijauan Segar + Konsentrat Protein' },
+          { date: '24 Nov 2026', weight: 334, note: 'Pemeriksaan kuku & postur jalan rutin. Bobot naik stabil mencapai 334 kg.', feed: 'Hijauan + Ampas Kedelai' }
+        ]
+      },
+      {
+        orderId: 'ORD-2026-882',
+        ternakId: 'TRN-04',
+        nama: 'Kambing Peranakan Etawa — "Syawal Akikah"',
+        peternak: 'Ust. Rizal (Darussalam Akikah Farm)',
+        scheme: 'Bayar Penuh (1 Ekor) + Jasa Jagal Syar\'i',
+        totalPaid: 4200000,
+        escrowStatus: 'Dalam Pengiriman Armada Kandang',
+        isEscrowReleased: false,
+        hasTitipRawat: false,
+        initialWeight: 42,
+        currentWeight: 42,
+        logs: []
+      }
+    ];
+
+    // Admin Verification Queue
+    let adminVerifications = [
+      {
+        id: 'VER-101',
+        kandang: 'Kandang Krueng Raya Sejahtera (Tgk. Murdani)',
+        lokasi: 'Aceh Besar',
+        ternak: 'Sapi Aceh Jantan (305 kg)',
+        skkhNo: 'SKKH-ACH-2026-092',
+        status: 'Menunggu Verifikasi'
+      },
+      {
+        id: 'VER-102',
+        kandang: 'Gayo Mitra Ternak (Pak Yusran)',
+        lokasi: 'Aceh Tengah',
+        ternak: 'Kerbau Jantan Gayo (440 kg)',
+        skkhNo: 'SKKH-ATG-2026-088',
+        status: 'Menunggu Verifikasi'
+      }
+    ];
+
+    // Chat & Nego Memory per Livestock ID
+    let chatHistory = {};
+    let negotiatedPrices = {};
+
+    // Active Modal Selections
+    let activeDetailId = null;
+    let activeCheckoutItem = null;
+    let selectedPatunganSlots = [];
+    let activeVirtualBarnOrderId = null;
+    let activeHandoverOrderId = null;
+    let currentSearchQuery = '';
+    let escrowReleasedTotal = 148500000;
+
+    // Draft 4 Foto Wajib pada Portal Peternak
+    let farmerPhotoDraft = {
+      samping: null,
+      depan: null,
+      gigi: null,
+      belakang: null
+    };
+
+    const PHOTO_ANGLE_CONFIG = [
+      {
+        key: 'samping',
+        step: 'Foto 1',
+        label: 'Tampak Samping',
+        desc: 'Postur panjang & tinggi badan ternak'
+      },
+      {
+        key: 'depan',
+        step: 'Foto 2',
+        label: 'Tampak Depan',
+        desc: 'Wajah, tanduk & lebar dada'
+      },
+      {
+        key: 'gigi',
+        step: 'Foto 3',
+        label: 'Kondisi Gigi (Cek Poel)',
+        desc: 'Susunan gigi depan (verifikasi usia)'
+      },
+      {
+        key: 'belakang',
+        step: 'Foto 4',
+        label: 'Tampak Belakang & Kaki',
+        desc: 'Postur kaki belakang, kuku & fisik sehat'
+      }
+    ];
+
+    // ==================== 2. CUSTOM SVG LIVESTOCK ILLUSTRATIONS ====================
+    function getLivestockSVG(jenis, colorHex = '#9A3412', mode = 'samping') {
+      const isGoat = jenis.includes('Kambing') || jenis.includes('Domba');
+      const isKerbau = jenis.includes('Kerbau');
+      const bodyColor = isKerbau ? '#334155' : (jenis.includes('Domba') ? '#CBD5E1' : colorHex);
+      const strokeColor = '#1E293B';
+
+      if (mode === 'gigi') {
+        return `
+          <div class="text-center space-y-2 w-full">
+            <div class="inline-block px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-800 text-[11px] font-bold">Inspeksi Gigi Seri (Poel Permanen)</div>
+            <svg class="w-48 h-32 mx-auto" viewBox="0 0 220 140" fill="none">
+              <rect x="20" y="25" width="180" height="90" rx="45" fill="#FECDD3" stroke="#E11D48" stroke-width="2"/>
+              <path d="M40 70 Q110 95 180 70" stroke="#BE123C" stroke-width="3" fill="none"/>
+              <rect x="62" y="58" width="14" height="22" rx="3" fill="#FEF3C7" stroke="#64748B" stroke-width="1.5"/>
+              <rect x="144" y="58" width="14" height="22" rx="3" fill="#FEF3C7" stroke="#64748B" stroke-width="1.5"/>
+              <rect x="82" y="46" width="24" height="36" rx="4" fill="#FFFFFF" stroke="#15803D" stroke-width="2.5"/>
+              <rect x="114" y="46" width="24" height="36" rx="4" fill="#FFFFFF" stroke="#15803D" stroke-width="2.5"/>
+            </svg>
+            <p class="text-[11px] text-slate-600 font-medium">✓ Sepasang gigi seri permanen tumbuh sempurna (Cukup Umur / Sah Kurban)</p>
+          </div>
+        `;
+      }
+
+      if (mode === 'depan') {
+        return `
+          <div class="text-center space-y-1.5 w-full">
+            <div class="inline-block px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-800 text-[11px] font-bold">Inspeksi Wajah, Tanduk & Dada Depan</div>
+            <svg class="w-44 h-36 mx-auto" viewBox="0 0 200 160" fill="none">
+              <ellipse cx="100" cy="148" rx="58" ry="6" fill="#D1FAE5"/>
+              <rect x="65" y="72" width="70" height="54" rx="20" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+              <rect x="74" y="114" width="12" height="30" rx="5" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+              <rect x="114" y="114" width="12" height="30" rx="5" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+              <path d="M72 42 Q48 25 62 15" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+              <path d="M128 42 Q152 25 138 15" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+              <rect x="72" y="34" width="56" height="52" rx="22" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+              <circle cx="86" cy="54" r="3.5" fill="#0F172A"/>
+              <circle cx="114" cy="54" r="3.5" fill="#0F172A"/>
+              <ellipse cx="100" cy="72" rx="16" ry="10" fill="#FDA4AF" stroke="${strokeColor}" stroke-width="1.5"/>
+              <circle cx="94" cy="72" r="2" fill="#1E293B"/>
+              <circle cx="106" cy="72" r="2" fill="#1E293B"/>
+            </svg>
+            <p class="text-[11px] text-slate-600">Mata jernih, moncong basah sehat, kedua tanduk & kaki simetris</p>
+          </div>
+        `;
+      }
+
+      if (mode === 'belakang') {
+        return `
+          <div class="text-center space-y-1.5 w-full">
+            <div class="inline-block px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-800 text-[11px] font-bold">Inspeksi Postur Kaki Belakang, Pinggul & Kuku</div>
+            <svg class="w-44 h-36 mx-auto" viewBox="0 0 200 160" fill="none">
+              <ellipse cx="100" cy="148" rx="58" ry="6" fill="#D1FAE5"/>
+              <rect x="62" y="42" width="76" height="68" rx="28" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+              <rect x="70" y="96" width="14" height="46" rx="6" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+              <rect x="116" y="96" width="14" height="46" rx="6" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+              <rect x="69" y="136" width="16" height="8" rx="3" fill="#1E293B"/>
+              <rect x="115" y="136" width="16" height="8" rx="3" fill="#1E293B"/>
+              <path d="M100 52 L100 118" stroke="#1E293B" stroke-width="5" stroke-linecap="round"/>
+              <ellipse cx="100" cy="122" rx="5" ry="9" fill="#1E293B"/>
+              <rect x="52" y="46" width="12" height="9" rx="2" fill="#22C55E" stroke="#065F46" stroke-width="1.5"/>
+            </svg>
+            <p class="text-[11px] text-slate-600">Kaki belakang kokoh, kuku utuh bebas luka, area belakang bersih sehat</p>
+          </div>
+        `;
+      }
+
+      // Default: Tampak Samping
+      if (isGoat) {
+        return `
+          <svg class="w-44 h-32 mx-auto" viewBox="0 0 220 150" fill="none">
+            <ellipse cx="110" cy="136" rx="68" ry="7" fill="#D1FAE5"/>
+            <rect x="68" y="96" width="10" height="36" rx="4" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+            <rect x="85" y="98" width="10" height="34" rx="4" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+            <rect x="132" y="96" width="10" height="36" rx="4" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+            <rect x="148" y="98" width="10" height="34" rx="4" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+            <rect x="58" y="56" width="104" height="50" rx="24" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+            <path d="M160 66 L174 54" stroke="${strokeColor}" stroke-width="4" stroke-linecap="round"/>
+            <rect x="34" y="36" width="42" height="32" rx="14" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+            <path d="M58 36 Q66 18 76 22" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+            <path d="M44 68 L40 80 L48 72" fill="#64748B" stroke="${strokeColor}" stroke-width="1.5"/>
+            <circle cx="48" cy="48" r="3" fill="#0F172A"/>
+            <rect x="64" y="44" width="10" height="7" rx="2" fill="#22C55E"/>
+          </svg>
+        `;
+      }
+
+      return `
+        <svg class="w-48 h-32 mx-auto" viewBox="0 0 240 150" fill="none">
+          <ellipse cx="122" cy="138" rx="82" ry="7" fill="#D1FAE5"/>
+          <rect x="68" y="96" width="13" height="38" rx="5" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+          <rect x="90" y="98" width="13" height="36" rx="5" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+          <rect x="150" y="96" width="13" height="38" rx="5" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+          <rect x="172" y="98" width="13" height="36" rx="5" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+          <rect x="56" y="48" width="134" height="58" rx="26" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+          <ellipse cx="86" cy="48" rx="22" ry="12" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+          <path d="M188 64 Q198 86 192 108" stroke="${strokeColor}" stroke-width="4" stroke-linecap="round"/>
+          <rect x="26" y="38" width="46" height="36" rx="15" fill="${bodyColor}" stroke="${strokeColor}" stroke-width="2"/>
+          <path d="M52 38 Q42 20 56 16" stroke="#475569" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="42" cy="51" r="3.2" fill="#0F172A"/>
+          <ellipse cx="29" cy="62" rx="6" ry="8" fill="#FDA4AF" stroke="${strokeColor}" stroke-width="1.5"/>
+          <rect x="60" y="45" width="11" height="8" rx="2" fill="#22C55E"/>
+        </svg>
+      `;
+    }
+
+    // ==================== 3. HELPER & UTILITY FUNCTIONS ====================
+    function formatRupiah(num) {
+      return 'Rp ' + Math.round(num).toLocaleString('id-ID');
+    }
+
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      const isWarning = type === 'warning';
+      toast.className = `pointer-events-auto p-3.5 rounded-2xl shadow-lg border backdrop-blur-md animate-modal flex items-start gap-3 ${
+        isWarning ? 'bg-amber-50/95 border-amber-300 text-amber-950' : 'bg-white/95 border-emerald-200 text-slate-900'
+      }`;
+
+      toast.innerHTML = `
+        <div class="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-xs font-extrabold ${
+          isWarning ? 'bg-amber-200 text-amber-900' : 'bg-brand-100 text-brand-800'
+        }">
+          ${isWarning ? '!' : '✓'}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-extrabold">${title}</div>
+          <div class="text-[11px] text-slate-600 mt-0.5 leading-snug">${message}</div>
+        </div>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 3600);
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function updateHeaderBadges() {
+      const heldTotal = userOrders
+        .filter(o => !o.isEscrowReleased)
+        .reduce((sum, o) => sum + o.totalPaid, 0);
+
+      const headerEscrow = document.getElementById('header-escrow-total');
+      if (headerEscrow) headerEscrow.textContent = formatRupiah(heldTotal);
+
+      const statEscrow = document.getElementById('stat-escrow-card');
+      if (statEscrow) {
+        const juta = (heldTotal / 1000000).toFixed(1).replace('.', ',');
+        statEscrow.textContent = `Rp ${juta} Jt`;
+      }
+
+      const adminHeld = document.getElementById('admin-escrow-held');
+      if (adminHeld) adminHeld.textContent = formatRupiah(heldTotal);
+
+      const adminReleased = document.getElementById('admin-escrow-released');
+      if (adminReleased) adminReleased.textContent = formatRupiah(escrowReleasedTotal);
+
+      const skkhCountEl = document.getElementById('header-skkh-count');
+      if (skkhCountEl) skkhCountEl.textContent = `${livestockData.length} Ternak SKKH`;
+
+      const statTotalEl = document.getElementById('stat-total-ternak');
+      if (statTotalEl) statTotalEl.textContent = `${livestockData.length} Ekor`;
+
+      const navOrderBadge = document.getElementById('nav-order-count');
+      if (navOrderBadge) navOrderBadge.textContent = userOrders.length;
+
+      const mobileOrderBadge = document.getElementById('mobile-order-badge');
+      if (mobileOrderBadge) mobileOrderBadge.textContent = userOrders.length;
+    }
+
+    // ==================== 4. NAVIGATION & FILTERING ====================
+    function switchTab(tabName) {
+      const views = ['katalog', 'patungan', 'pesanan', 'peternak', 'admin'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.toggle('hidden', v !== tabName);
+      });
+
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        const isActive = btn.getAttribute('data-tab') === tabName;
+        if (isActive) {
+          btn.className = 'nav-tab active-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-brand-700 text-white shadow-sm';
+        } else {
+          btn.className = 'nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-800 border border-slate-200';
+        }
+      });
+
+      if (tabName === 'katalog') renderCatalog();
+      if (tabName === 'patungan') renderPatunganTab();
+      if (tabName === 'pesanan') renderOrdersTab();
+      if (tabName === 'peternak') {
+        renderPhotoUploadSlots();
+        renderFarmerStockTable();
+      }
+      if (tabName === 'admin') renderAdminTab();
+    }
+
+    function handleSearchInput(val) {
+      currentSearchQuery = val.trim().toLowerCase();
+      renderCatalog();
+    }
+
+    function quickFilter(type, value) {
+      if (type === 'peruntukan') {
+        document.getElementById('filter-peruntukan').value = value;
+      } else if (type === 'jenis') {
+        document.getElementById('filter-jenis').value = value;
+      }
+      renderCatalog();
+    }
+
+    function resetFilters() {
+      document.getElementById('filter-jenis').value = 'Semua';
+      document.getElementById('filter-peruntukan').value = 'Semua';
+      document.getElementById('filter-lokasi').value = 'Semua';
+      document.getElementById('filter-sort').value = 'terbaru';
+      document.getElementById('global-search').value = '';
+      currentSearchQuery = '';
+      renderCatalog();
+      showToast('Filter Direset', 'Menampilkan seluruh ternak terverifikasi di Aceh.');
+    }
+
+    // ==================== 5. RENDER KATALOG TERNAK ====================
+    function renderCatalog() {
+      const jenisFilter = document.getElementById('filter-jenis').value;
+      const peruntukanFilter = document.getElementById('filter-peruntukan').value;
+      const lokasiFilter = document.getElementById('filter-lokasi').value;
+      const sortFilter = document.getElementById('filter-sort').value;
+
+      let filtered = livestockData.filter(item => {
+        const matchJenis = jenisFilter === 'Semua' || item.jenis === jenisFilter;
+        const matchPeruntukan = peruntukanFilter === 'Semua' || item.peruntukan === peruntukanFilter;
+        const matchLokasi = lokasiFilter === 'Semua' || item.lokasi === lokasiFilter;
+        const matchSearch = !currentSearchQuery ||
+          item.nama.toLowerCase().includes(currentSearchQuery) ||
+          item.jenis.toLowerCase().includes(currentSearchQuery) ||
+          item.lokasi.toLowerCase().includes(currentSearchQuery) ||
+          item.peternak.toLowerCase().includes(currentSearchQuery);
+        return matchJenis && matchPeruntukan && matchLokasi && matchSearch;
+      });
+
+      if (sortFilter === 'harga-rendah') {
+        filtered.sort((a, b) => (negotiatedPrices[a.id] || a.harga) - (negotiatedPrices[b.id] || b.harga));
+      } else if (sortFilter === 'bobot-berat') {
+        filtered.sort((a, b) => b.bobot - a.bobot);
+      }
+
+      document.getElementById('catalog-count').textContent = filtered.length;
+      updateHeaderBadges();
+
+      const grid = document.getElementById('catalog-grid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl p-10 border border-slate-200 text-center space-y-3">
+            <div class="text-base font-extrabold text-slate-800">Tidak ada ternak yang cocok dengan filter pencarian</div>
+            <p class="text-xs text-slate-500">Coba ubah kabupaten lokasi kandang atau reset filter pencarian Anda.</p>
+            <button onclick="resetFilters()" class="px-4 py-2 bg-brand-700 text-white text-xs font-bold rounded-xl">Reset Filter</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const dealPrice = negotiatedPrices[item.id];
+        const hargaPerKg = Math.round((dealPrice || item.harga) / item.bobot);
+        const isSold = item.status === 'Terjual';
+        const filledSlots = item.slots ? item.slots.filter(s => s.paid).length : 0;
+
+        return `
+          <article class="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:border-brand-300 transition-all overflow-hidden flex flex-col justify-between group">
+            <div>
+              <!-- Card Visual Header -->
+              <div onclick="openDetailModal('${item.id}')" class="relative h-48 bg-gradient-to-b from-brand-50/90 to-white p-4 flex items-center justify-center cursor-pointer border-b border-slate-100">
+                <!-- Top Left Status & SKKH -->
+                <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                  <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${
+                    item.status === 'Tersedia' ? 'bg-brand-700 text-white' : (item.status === 'Dipesan (DP)' ? 'bg-amber-500 text-white' : 'bg-slate-600 text-white')
+                  }">
+                    ${item.status}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white/95 text-brand-800 border border-brand-200">
+                    ✓ SKKH
+                  </span>
+                </div>
+
+                <!-- Top Right Peruntukan -->
+                <div class="absolute top-3 right-3 z-10">
+                  <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-100/90 text-brand-900">
+                    ${item.peruntukan}
+                  </span>
+                </div>
+
+                <!-- Foto Utama (Tampak Samping) atau Ilustrasi SVG -->
+                <div class="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                  ${item.photos && item.photos.samping
+                    ? `<img src="${item.photos.samping}" alt="${item.nama}" class="max-h-36 w-auto object-contain rounded-xl shadow-2xs border border-emerald-200/70 bg-white p-1" />`
+                    : getLivestockSVG(item.jenis, item.colorHex, 'samping')
+                  }
+                </div>
+
+                <!-- Bottom Overlay Pills -->
+                <div class="absolute bottom-2.5 left-3 right-3 flex items-center justify-between gap-1.5 z-10">
+                  <span class="px-2 py-0.5 rounded-md bg-white/95 text-brand-800 border border-brand-200 text-[10px] font-bold">
+                    📷 4 Foto Sudut & Gigi
+                  </span>
+                  ${item.patungan ? `
+                    <span class="px-2 py-0.5 rounded-md bg-brand-800/90 text-white text-[10px] font-bold">
+                      Patungan: ${filledSlots}/7
+                    </span>
+                  ` : (item.titipRawat ? `
+                    <span class="px-2 py-0.5 rounded-md bg-white/95 text-brand-800 border border-brand-200 text-[10px] font-bold">
+                      Titip Rawat
+                    </span>
+                  ` : '')}
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="p-5 space-y-3">
+                <div>
+                  <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
+                    <span class="font-semibold text-brand-700">${item.jenis} • ${item.kelamin}</span>
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      ${item.lokasi}
+                    </span>
+                  </div>
+                  <h3 onclick="openDetailModal('${item.id}')" class="text-base font-extrabold text-slate-900 group-hover:text-brand-700 transition-colors cursor-pointer line-clamp-2">
+                    ${item.nama}
+                  </h3>
+                </div>
+
+                <!-- Weight & Age Pill Box -->
+                <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                  <div>
+                    <span class="text-slate-400 block text-[10px]">Estimasi Bobot</span>
+                    <span class="font-extrabold text-slate-800">${item.bobot} kg</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 block text-[10px]">Usia & Gigi</span>
+                    <span class="font-bold text-slate-800">${item.usia}</span>
+                  </div>
+                </div>
+
+                <!-- Farmer KYC -->
+                <div class="flex items-center gap-2 text-xs text-slate-600">
+                  <span class="w-5 h-5 rounded-full bg-brand-100 text-brand-800 font-bold text-[10px] flex items-center justify-center shrink-0">✓</span>
+                  <span class="truncate font-medium">${item.peternak}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Footer Price & Actions -->
+            <div class="px-5 pb-5 pt-3 border-t border-slate-100 flex items-end justify-between gap-2">
+              <div>
+                <div class="text-[11px] text-slate-400">
+                  ${dealPrice ? '<span class="text-brand-700 font-bold">Harga Deal Nego:</span>' : `Est. ${formatRupiah(hargaPerKg)}/kg`}
+                </div>
+                <div class="text-lg font-extrabold text-brand-700">
+                  ${formatRupiah(dealPrice || item.harga)}
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="openDetailModal('${item.id}', 'nego')" ${isSold ? 'disabled' : ''} class="px-3 py-2 rounded-xl border border-brand-200 bg-brand-50 hover:bg-brand-100 text-brand-800 text-xs font-bold transition-colors disabled:opacity-40">
+                  Nego
+                </button>
+                <button onclick="openDetailModal('${item.id}', 'info')" ${isSold ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold shadow-sm transition-colors disabled:bg-slate-400">
+                  ${isSold ? 'Terjual' : 'Detail & Beli'}
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // ==================== 6. PATUNGAN KURBAN TAB ====================
+    function renderPatunganTab() {
+      const patunganItems = livestockData.filter(item => item.patungan);
+      const grid = document.getElementById('patungan-grid');
+
+      grid.innerHTML = patunganItems.map(item => {
+        const pricePerSlot = Math.ceil(item.harga / 7);
+        const filledCount = item.slots.filter(s => s.paid).length;
+        const openCount = 7 - filledCount;
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 flex flex-col justify-between space-y-5">
+            <div class="flex flex-col sm:flex-row gap-4">
+              <div class="w-full sm:w-40 h-32 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0 overflow-hidden p-2">
+                ${item.photos && item.photos.samping
+                  ? `<img src="${item.photos.samping}" alt="${item.nama}" class="max-h-28 w-auto object-contain rounded-xl" />`
+                  : getLivestockSVG(item.jenis, item.colorHex, 'samping')
+                }
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-800 text-xs font-bold">${item.jenis} • ${item.bobot} kg</span>
+                  <span class="text-xs font-semibold text-slate-500">${item.lokasi}</span>
+                </div>
+                <h3 class="text-base font-extrabold text-slate-900">${item.nama}</h3>
+                <p class="text-xs text-slate-500">Peternak: ${item.peternak} • SKKH: ${item.skkh}</p>
+                <div class="pt-1 flex items-baseline gap-2">
+                  <span class="text-lg font-extrabold text-brand-700">${formatRupiah(pricePerSlot)}</span>
+                  <span class="text-xs text-slate-500">/ 1 Slot Peserta (Total ${formatRupiah(item.harga)})</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7 Slots Visual Progress -->
+            <div class="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-800">Status Kuota Patungan (${filledCount}/7 Terisi)</span>
+                <span class="font-bold ${openCount > 0 ? 'text-brand-700' : 'text-slate-500'}">
+                  ${openCount > 0 ? `Tersisa ${openCount} Slot Kosong` : 'Kuota Penuh'}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                ${item.slots.map(slot => `
+                  <div class="flex items-center justify-between px-3 py-2 rounded-xl text-xs border ${slot.paid ? 'bg-white border-brand-200 text-slate-700' : 'bg-brand-50/70 border-dashed border-brand-400 text-brand-800'}">
+                    <span class="font-semibold truncate">
+                      <strong class="mr-1">#${slot.no}</strong> ${slot.paid ? slot.name : 'Slot Kosong Tersedia'}
+                    </span>
+                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${slot.paid ? 'bg-brand-100 text-brand-800' : 'bg-white text-brand-700'}">
+                      ${slot.paid ? 'Lunas' : 'Buka'}
+                    </span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 pt-1">
+              <button onclick="openDetailModal('${item.id}')" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold">
+                Cek SKKH & Gigi
+              </button>
+              <button onclick="openCheckoutDirect('${item.id}', 'patungan')" ${openCount === 0 ? 'disabled' : ''} class="flex-1 py-2.5 px-4 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold shadow-sm disabled:bg-slate-400 transition-colors">
+                ${openCount > 0 ? 'Ambil Slot Patungan Sekarang' : 'Kuota Patungan Penuh'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== 7. DETAIL MODAL & CHAT NEGO ====================
+    function openDetailModal(id, initialSubtab = 'info') {
+      const item = livestockData.find(t => t.id === id);
+      if (!item) return;
+
+      activeDetailId = id;
+      document.getElementById('detail-badge-jenis').textContent = item.jenis;
+      document.getElementById('detail-title').textContent = item.nama;
+      document.getElementById('detail-bobot').textContent = `${item.bobot} kg`;
+      document.getElementById('detail-usia').textContent = item.usia;
+      document.getElementById('detail-harga-kg').textContent = formatRupiah(Math.round(item.harga / item.bobot));
+      document.getElementById('detail-peternak').textContent = item.peternak;
+      document.getElementById('detail-lokasi').textContent = `${item.kecamatan}, Kab/Kota ${item.lokasi}`;
+      document.getElementById('detail-skkh-no').textContent = item.skkh;
+      document.getElementById('detail-syari').textContent = item.usia.includes('Poel') ? `Sah ${item.peruntukan}` : 'Bakalan / Penggemukan';
+      document.getElementById('detail-deskripsi').textContent = item.deskripsi;
+
+      const activePrice = negotiatedPrices[item.id] || item.harga;
+      document.getElementById('detail-harga').textContent = formatRupiah(activePrice);
+      if (negotiatedPrices[item.id]) {
+        document.getElementById('detail-deal-pill').classList.remove('hidden');
+      } else {
+        document.getElementById('detail-deal-pill').classList.add('hidden');
+      }
+
+      if (!chatHistory[item.id]) {
+        chatHistory[item.id] = [
+          {
+            sender: 'seller',
+            time: 'Baru saja',
+            text: `Assalamu'alaikum! Saya ${item.peternak}. Ternak ${item.nama} (${item.bobot} kg) dalam kondisi sehat walafiat dan bersertifikat ${item.skkh}. Silakan ajukan penawaran harga atau tanyakan detail kandang.`
+          }
+        ];
+      }
+
+      document.getElementById('nego-offer-input').value = Math.round((item.harga * 0.95) / 50000) * 50000;
+
+      switchInspectionView('samping');
+      switchDetailSubtab(initialSubtab);
+      renderNegoChat();
+
+      document.getElementById('modal-detail').classList.remove('hidden');
+    }
+
+    function switchInspectionView(mode) {
+      const item = livestockData.find(t => t.id === activeDetailId);
+      if (!item) return;
+
+      const angleMeta = {
+        samping: {
+          title: '1. Tampak Samping',
+          caption: '1. Tampak Samping: Memperlihatkan postur panjang, punuk, dan proporsi tinggi badan ternak.'
+        },
+        depan: {
+          title: '2. Tampak Depan',
+          caption: '2. Tampak Depan: Memperlihatkan simetri wajah, bentuk tanduk, kejernihan mata, dan lebar dada.'
+        },
+        gigi: {
+          title: '3. Kondisi Gigi (Cek Poel)',
+          caption: '3. Kondisi Gigi (Poel): Memperlihatkan susunan gigi seri permanen untuk verifikasi usia & syarat sah kurban.'
+        },
+        belakang: {
+          title: '4. Tampak Belakang & Kaki',
+          caption: '4. Tampak Belakang & Kaki: Memperlihatkan kekuatan tumpuan kaki belakang, kuku sehat, dan kebersihan fisik.'
+        }
+      };
+
+      ['samping', 'depan', 'gigi', 'belakang'].forEach(m => {
+        const btn = document.getElementById(`insp-btn-${m}`);
+        if (!btn) return;
+        if (m === mode) {
+          btn.className = 'insp-btn p-2 rounded-xl border-2 border-brand-600 bg-brand-50 text-brand-800 text-[11px] font-bold text-center transition-all';
+        } else {
+          btn.className = 'insp-btn p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-[11px] font-semibold text-center transition-all';
+        }
+      });
+
+      const stage = document.getElementById('detail-visual-stage');
+      if (item.photos && item.photos[mode]) {
+        stage.innerHTML = `
+          <div class="relative w-full h-full flex items-center justify-center">
+            <span class="absolute top-1 left-1 px-2.5 py-1 rounded-lg bg-brand-800/90 text-white text-[10px] font-bold shadow-2xs">
+              Foto Asli Peternak • ${angleMeta[mode].title}
+            </span>
+            <img src="${item.photos[mode]}" alt="${angleMeta[mode].title}" class="max-h-52 w-auto object-contain rounded-xl border border-emerald-200 bg-white p-1 shadow-2xs" />
+          </div>
+        `;
+      } else {
+        stage.innerHTML = getLivestockSVG(item.jenis, item.colorHex, mode);
+      }
+
+      const captionEl = document.getElementById('detail-visual-caption');
+      if (captionEl && angleMeta[mode]) {
+        captionEl.innerHTML = `<strong>${angleMeta[mode].caption.split(':')[0]}:</strong>${angleMeta[mode].caption.split(':')[1]}`;
+      }
+    }
+
+    function switchDetailSubtab(subtab) {
+      const isInfo = subtab === 'info';
+      document.getElementById('detail-subtab-info').classList.toggle('hidden', !isInfo);
+      document.getElementById('detail-subtab-nego').classList.toggle('hidden', isInfo);
+
+      document.getElementById('subtab-btn-info').className = isInfo
+        ? 'flex-1 py-2 text-xs font-bold rounded-lg bg-white text-brand-800 shadow-sm transition-all'
+        : 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+
+      document.getElementById('subtab-btn-nego').className = !isInfo
+        ? 'flex-1 py-2 text-xs font-bold rounded-lg bg-white text-brand-800 shadow-sm transition-all flex items-center justify-center gap-1.5'
+        : 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5';
+    }
+
+    function renderNegoChat() {
+      const box = document.getElementById('nego-chat-box');
+      const messages = chatHistory[activeDetailId] || [];
+      box.innerHTML = messages.map(m => `
+        <div class="flex flex-col ${m.sender === 'buyer' ? 'items-end' : 'items-start'}">
+          <div class="max-w-[85%] px-3.5 py-2.5 rounded-2xl ${
+            m.sender === 'buyer'
+              ? 'bg-brand-700 text-white rounded-br-sm'
+              : 'bg-white border border-slate-200 text-slate-800 rounded-bl-sm'
+          }">
+            <div class="leading-relaxed">${m.text}</div>
+          </div>
+          <span class="text-[10px] text-slate-400 mt-1 px-1">${m.sender === 'buyer' ? 'Anda' : 'Peternak'} • ${m.time}</span>
+        </div>
+      `).join('');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function submitNegoOffer() {
+      const item = livestockData.find(t => t.id === activeDetailId);
+      if (!item) return;
+
+      const offerVal = parseInt(document.getElementById('nego-offer-input').value, 10);
+      if (!offerVal || offerVal <= 0) {
+        showToast('Nominal Tidak Valid', 'Masukkan nominal tawaran harga yang sesuai.', 'warning');
+        return;
+      }
+
+      chatHistory[item.id].push({
+        sender: 'buyer',
+        time: 'Baru saja',
+        text: `Saya mengajukan penawaran harga sebesar <strong>${formatRupiah(offerVal)}</strong> untuk ${item.nama}.`
+      });
+
+      const minAcceptable = Math.round(item.harga * 0.90);
+      if (offerVal >= minAcceptable) {
+        negotiatedPrices[item.id] = offerVal;
+        document.getElementById('detail-harga').textContent = formatRupiah(offerVal);
+        document.getElementById('detail-deal-pill').classList.remove('hidden');
+
+        chatHistory[item.id].push({
+          sender: 'seller',
+          time: 'Otomatis',
+          text: `Alhamdulillah, tawaran <strong>${formatRupiah(offerVal)}</strong> saya terima! Harga deal ini sudah otomatis diterapkan pada checkout Anda.`
+        });
+        showToast('Penawaran Disetujui!', `Harga deal ${formatRupiah(offerVal)} berhasil dikunci.`);
+        renderCatalog();
+      } else {
+        chatHistory[item.id].push({
+          sender: 'seller',
+          time: 'Otomatis',
+          text: `Maaf Pak/Bu, penawaran ${formatRupiah(offerVal)} belum masuk modal pakan & perawatan. Kami bisa lepas minimal di <strong>${formatRupiah(minAcceptable)}</strong>.`
+        });
+        showToast('Tawaran Belum Masuk', `Peternak menyarankan minimal ${formatRupiah(minAcceptable)}.`, 'warning');
+      }
+
+      renderNegoChat();
+    }
+
+    function sendChatMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-msg-input');
+      const text = input.value.trim();
+      if (!text || !activeDetailId) return;
+
+      chatHistory[activeDetailId].push({
+        sender: 'buyer',
+        time: 'Baru saja',
+        text
+      });
+
+      input.value = '';
+      renderNegoChat();
+
+      setTimeout(() => {
+        if (!chatHistory[activeDetailId]) return;
+        chatHistory[activeDetailId].push({
+          sender: 'seller',
+          time: 'Baru saja',
+          text: 'Baik Pak/Bu, ternak siap dipantau langsung atau dikirim sesuai jadwal akad dengan dokumen SKKH asli.'
+        });
+        renderNegoChat();
+      }, 650);
+    }
+
+    // ==================== 8. CHECKOUT, PATUNGAN 1/7 & ESCROW ====================
+    function openCheckoutFromDetail() {
+      if (!activeDetailId) return;
+      closeModal('modal-detail');
+      openCheckoutDirect(activeDetailId, 'full');
+    }
+
+    function openCheckoutDirect(id, defaultScheme = 'full') {
+      const item = livestockData.find(t => t.id === id);
+      if (!item) return;
+
+      activeCheckoutItem = item;
+      const basePrice = negotiatedPrices[item.id] || item.harga;
+
+      document.getElementById('co-peternak').textContent = item.peternak;
+      document.getElementById('co-nama').textContent = item.nama;
+      document.getElementById('co-specs').textContent = `${item.jenis} • Bobot ${item.bobot} kg • Lokasi Kandang: ${item.lokasi}`;
+      document.getElementById('co-base-price').textContent = formatRupiah(basePrice);
+
+      const patunganLabel = document.getElementById('co-patungan-option');
+      patunganLabel.classList.toggle('hidden', !item.patungan);
+
+      const radios = document.querySelectorAll('input[name="co-scheme"]');
+      radios.forEach(r => {
+        r.checked = r.value === (defaultScheme === 'patungan' && item.patungan ? 'patungan' : 'full');
+      });
+
+      // Select first available slot if patungan
+      selectedPatunganSlots = [];
+      if (item.patungan && item.slots) {
+        const firstOpen = item.slots.find(s => !s.paid);
+        if (firstOpen) selectedPatunganSlots = [firstOpen.no];
+      }
+
+      document.getElementById('co-titip-check').checked = false;
+      document.getElementById('co-addon-jagal').checked = false;
+      document.getElementById('co-addon-katering').checked = false;
+
+      recalculateCheckout();
+      document.getElementById('modal-checkout').classList.remove('hidden');
+    }
+
+    function togglePatunganSlot(slotNo) {
+      if (selectedPatunganSlots.includes(slotNo)) {
+        if (selectedPatunganSlots.length > 1) {
+          selectedPatunganSlots = selectedPatunganSlots.filter(n => n !== slotNo);
+        }
+      } else {
+        selectedPatunganSlots.push(slotNo);
+      }
+      recalculateCheckout();
+    }
+
+    function recalculateCheckout() {
+      if (!activeCheckoutItem) return;
+      const item = activeCheckoutItem;
+      const basePrice = negotiatedPrices[item.id] || item.harga;
+      const scheme = document.querySelector('input[name="co-scheme"]:checked').value;
+
+      // Patungan box visibility & slot rendering
+      const patunganBox = document.getElementById('co-patungan-box');
+      if (scheme === 'patungan' && item.patungan) {
+        patunganBox.classList.remove('hidden');
+        document.getElementById('co-slot-selected-info').textContent = `${selectedPatunganSlots.length} Slot Dipilih`;
+        document.getElementById('co-slots-grid').innerHTML = item.slots.map(slot => {
+          const isSelected = selectedPatunganSlots.includes(slot.no);
+          if (slot.paid) {
+            return `
+              <div class="px-3 py-2 rounded-xl bg-slate-200/70 text-slate-500 text-xs flex items-center justify-between">
+                <span class="truncate">#${slot.no} ${slot.name}</span>
+                <span class="text-[10px] font-bold">Terisi</span>
+              </div>
+            `;
+          }
+          return `
+            <button type="button" onclick="togglePatunganSlot(${slot.no})" class="px-3 py-2 rounded-xl text-xs font-bold border text-left flex items-center justify-between transition-all ${
+              isSelected ? 'bg-brand-700 text-white border-brand-700' : 'bg-white text-brand-800 border-brand-300 hover:bg-brand-50'
+            }">
+              <span>#${slot.no} Slot Kosong</span>
+              <span>${isSelected ? '✓ Dipilih' : '+ Pilih'}</span>
+            </button>
+          `;
+        }).join('');
+      } else {
+        patunganBox.classList.add('hidden');
+      }
+
+      // Base livestock cost by scheme
+      let ternakCost = basePrice;
+      let schemeLabel = 'Harga Ternak (Bayar Penuh 1 Ekor)';
+      if (scheme === 'dp') {
+        ternakCost = Math.round(basePrice * 0.3);
+        schemeLabel = 'Uang Muka / Booking DP (30%)';
+      } else if (scheme === 'patungan') {
+        const count = Math.max(1, selectedPatunganSlots.length);
+        ternakCost = Math.ceil(basePrice / 7) * count;
+        schemeLabel = `Patungan Kurban (${count}/7 Slot)`;
+      }
+
+      // Titip Rawat calculation
+      const isTitip = document.getElementById('co-titip-check').checked;
+      document.getElementById('co-titip-options').classList.toggle('hidden', !isTitip);
+      const dailyRate = item.bobot > 100 ? 25000 : 10000;
+      document.getElementById('co-titip-rate-text').textContent = `${formatRupiah(dailyRate)} / hari`;
+      const titipDays = parseInt(document.getElementById('co-titip-days').value, 10);
+      const titipCost = isTitip ? dailyRate * titipDays : 0;
+
+      // Shipping calculation
+      const shipMethod = document.getElementById('co-shipping-method').value;
+      const shipDest = document.getElementById('co-shipping-dest').value;
+      let shipCost = 0;
+      if (shipMethod !== 'pickup') {
+        const isSameKab = shipDest === item.lokasi;
+        const baseShip = isSameKab ? 150000 : 350000;
+        shipCost = shipMethod === 'mitra' ? baseShip + 100000 : baseShip;
+      }
+      document.getElementById('co-shipping-info').textContent = shipMethod === 'pickup'
+        ? `Ambil langsung di kandang (${item.lokasi})`
+        : `Pengiriman dari ${item.lokasi} ke ${shipDest}`;
+      document.getElementById('co-shipping-cost').textContent = shipCost === 0 ? 'Gratis' : formatRupiah(shipCost);
+
+      // Add-ons
+      const jagalCost = document.getElementById('co-addon-jagal').checked ? 350000 : 0;
+      const kateringCost = document.getElementById('co-addon-katering').checked ? 1250000 : 0;
+      const addonCost = jagalCost + kateringCost;
+
+      const grandTotal = ternakCost + titipCost + shipCost + addonCost;
+
+      document.getElementById('co-summary-label').textContent = schemeLabel;
+      document.getElementById('co-summary-ternak').textContent = formatRupiah(ternakCost);
+      document.getElementById('co-summary-titip').textContent = formatRupiah(titipCost);
+      document.getElementById('co-summary-ongkir').textContent = formatRupiah(shipCost);
+      document.getElementById('co-summary-addon').textContent = formatRupiah(addonCost);
+      document.getElementById('co-summary-total').textContent = formatRupiah(grandTotal);
+    }
+
+    function confirmCheckoutOrder() {
+      if (!activeCheckoutItem) return;
+      const item = activeCheckoutItem;
+      const scheme = document.querySelector('input[name="co-scheme"]:checked').value;
+      const isTitip = document.getElementById('co-titip-check').checked;
+      const titipDays = parseInt(document.getElementById('co-titip-days').value, 10);
+
+      const totalText = document.getElementById('co-summary-total').textContent;
+      const totalPaid = parseInt(totalText.replace(/[^0-9]/g, ''), 10);
+
+      if (scheme === 'patungan' && item.patungan) {
+        selectedPatunganSlots.forEach(slotNo => {
+          const slotObj = item.slots.find(s => s.no === slotNo);
+          if (slotObj) {
+            slotObj.paid = true;
+            slotObj.name = 'Anda (Peserta Baru)';
+          }
+        });
+        const allFull = item.slots.every(s => s.paid);
+        if (allFull) item.status = 'Terjual';
+      } else if (scheme === 'dp') {
+        item.status = 'Dipesan (DP)';
+      } else {
+        item.status = 'Terjual';
+      }
+
+      const schemeDesc = scheme === 'patungan'
+        ? `Patungan Kurban (${selectedPatunganSlots.length}/7 Slot)`
+        : (scheme === 'dp' ? 'Booking DP 30%' : 'Bayar Penuh (1 Ekor)');
+
+      const newOrder = {
+        orderId: `ORD-2026-${Math.floor(100 + Math.random() * 899)}`,
+        ternakId: item.id,
+        nama: item.nama,
+        peternak: item.peternak,
+        scheme: isTitip ? `${schemeDesc} + Titip Rawat ${titipDays} Hari` : schemeDesc,
+        totalPaid,
+        escrowStatus: isTitip ? 'Dititip Rawat di Kandang Virtual' : 'Dana Aman di Escrow',
+        isEscrowReleased: false,
+        hasTitipRawat: isTitip,
+        initialWeight: item.bobot,
+        currentWeight: item.bobot,
+        logs: isTitip ? [
+          {
+            date: 'Hari Ini',
+            weight: item.bobot,
+            note: 'Akad titip rawat dimulai. Hewan masuk blok karantina sehat & penimbangan awal.',
+            feed: 'Hijauan Segar + Mineral Blok'
+          }
+        ] : []
+      };
+
+      userOrders.unshift(newOrder);
+      updateHeaderBadges();
+      closeModal('modal-checkout');
+      switchTab('pesanan');
+      showToast('Pembayaran Escrow Berhasil!', `Dana ${formatRupiah(totalPaid)} diamankan di Rekening Bersama Syariah.`);
+    }
+
+    // ==================== 9. PESANAN, KANDANG VIRTUAL & TIMBANG ULANG ====================
+    function renderOrdersTab() {
+      const container = document.getElementById('orders-list');
+      if (userOrders.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-sm text-slate-500">Belum ada transaksi aktif.</div>`;
+        return;
+      }
+
+      container.innerHTML = userOrders.map(order => `
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-mono font-bold text-slate-500">${order.orderId}</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                  order.isEscrowReleased ? 'bg-slate-100 text-slate-700' : 'bg-brand-100 text-brand-800'
+                }">
+                  ${order.escrowStatus}
+                </span>
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">${order.nama}</h3>
+              <p class="text-xs text-slate-500">Peternak: ${order.peternak} • Skema: <strong>${order.scheme}</strong></p>
+            </div>
+
+            <div class="sm:text-right">
+              <div class="text-[11px] text-slate-400">Nilai Transaksi Escrow</div>
+              <div class="text-lg font-extrabold text-brand-700">${formatRupiah(order.totalPaid)}</div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="text-xs text-slate-600">
+              Bobot Akad: <strong>${order.initialWeight} kg</strong>
+              ${order.hasTitipRawat ? ` • Bobot Terkini: <strong class="text-brand-700">${order.currentWeight} kg (+${order.currentWeight - order.initialWeight} kg)</strong>` : ''}
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              ${order.hasTitipRawat ? `
+                <button onclick="openVirtualBarnModal('${order.orderId}')" class="px-3.5 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 border border-brand-200 text-xs font-bold transition-colors">
+                  Pantau Kandang Virtual
+                </button>
+              ` : ''}
+
+              ${!order.isEscrowReleased ? `
+                <button onclick="openHandoverModal('${order.orderId}')" class="px-4 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold shadow-sm transition-colors">
+                  Konfirmasi Terima & Timbang Ulang
+                </button>
+              ` : `
+                <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-brand-800 text-xs font-bold border border-emerald-200">
+                  ✓ Selesai & Dana Cair
+                </span>
+              `}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openVirtualBarnModal(orderId) {
+      const order = userOrders.find(o => o.orderId === orderId);
+      if (!order) return;
+
+      activeVirtualBarnOrderId = orderId;
+      document.getElementById('vb-title').textContent = `Kandang Virtual — ${order.nama}`;
+      document.getElementById('vb-initial-weight').textContent = `${order.initialWeight} kg`;
+      const gain = order.currentWeight - order.initialWeight;
+      document.getElementById('vb-current-weight').textContent = `${order.currentWeight} kg (+${gain} kg)`;
+
+      const logsContainer = document.getElementById('vb-logs-container');
+      logsContainer.innerHTML = order.logs.map(log => `
+        <div class="relative bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <span class="w-3 h-3 rounded-full bg-brand-600 absolute -left-[23px] top-4 ring-4 ring-white"></span>
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="font-extrabold text-slate-900">${log.date}</span>
+            <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-800 font-bold">Bobot: ${log.weight} kg</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">${log.note}</p>
+          <div class="text-[11px] text-brand-700 font-semibold mt-1">Menu Pakan: ${log.feed}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('modal-virtual-barn').classList.remove('hidden');
+    }
+
+    function simulateNewBarnLog() {
+      const order = userOrders.find(o => o.orderId === activeVirtualBarnOrderId);
+      if (!order) return;
+
+      const addedKg = order.initialWeight > 100 ? 5 : 2;
+      order.currentWeight += addedKg;
+      order.logs.push({
+        date: 'Pembaruan Hari Ini',
+        weight: order.currentWeight,
+        note: `Penimbangan mingguan terverifikasi. Kenaikan bobot +${addedKg} kg, nafsu makan lahap & bebas gejala penyakit.`,
+        feed: 'Rumput Odot Fermentasi + Konsentrat'
+      });
+
+      openVirtualBarnModal(order.orderId);
+      renderOrdersTab();
+      showToast('Laporan Kandang Diterima', `Bobot ternak naik +${addedKg} kg menjadi ${order.currentWeight} kg.`);
+    }
+
+    function openHandoverModal(orderId) {
+      const order = userOrders.find(o => o.orderId === orderId);
+      if (!order) return;
+
+      activeHandoverOrderId = orderId;
+      document.getElementById('ho-order-name').textContent = order.nama;
+      document.getElementById('ho-expected-weight').textContent = `${order.currentWeight} kg`;
+      document.getElementById('ho-actual-weight').value = order.currentWeight - 2;
+
+      evaluateWeightShrinkage();
+      document.getElementById('modal-handover').classList.remove('hidden');
+    }
+
+    function evaluateWeightShrinkage() {
+      const order = userOrders.find(o => o.orderId === activeHandoverOrderId);
+      if (!order) return;
+
+      const actual = parseFloat(document.getElementById('ho-actual-weight').value) || 0;
+      const expected = order.currentWeight;
+      const diffPct = ((expected - actual) / expected) * 100;
+
+      const feedback = document.getElementById('ho-weight-feedback');
+      const disputeBtn = document.getElementById('ho-dispute-btn');
+
+      if (diffPct <= 5) {
+        feedback.className = 'text-xs mt-1.5 font-semibold text-brand-700';
+        feedback.textContent = `✓ Bobot sesuai toleransi penyusutan transportasi (${Math.max(0, diffPct).toFixed(1)}% < 5%).`;
+        disputeBtn.classList.add('hidden');
+      } else {
+        feedback.className = 'text-xs mt-1.5 font-semibold text-amber-700';
+        feedback.textContent = `⚠ Terdeteksi penyusutan bobot ${diffPct.toFixed(1)}% (melebihi batas wajar 5%). Anda dapat mengajukan mediasi Escrow.`;
+        disputeBtn.classList.remove('hidden');
+      }
+    }
+
+    function completeEscrowRelease() {
+      const order = userOrders.find(o => o.orderId === activeHandoverOrderId);
+      if (!order) return;
+
+      order.isEscrowReleased = true;
+      order.escrowStatus = 'Selesai • Dana Cair ke Peternak';
+      escrowReleasedTotal += order.totalPaid;
+
+      updateHeaderBadges();
+      renderOrdersTab();
+      closeModal('modal-handover');
+      showToast('Serah Terima Dikonfirmasi!', `Dana ${formatRupiah(order.totalPaid)} telah diteruskan ke rekening peternak.`);
+    }
+
+    function openEscrowDispute() {
+      const order = userOrders.find(o => o.orderId === activeHandoverOrderId);
+      if (!order) return;
+
+      order.escrowStatus = 'Mediasi Sengketa Bobot (Ditahan Admin)';
+      renderOrdersTab();
+      closeModal('modal-handover');
+      showToast('Mediasi Diajukan', 'Dana Escrow tetap ditahan aman hingga tim mediator menyelesaikan selisih bobot.', 'warning');
+    }
+
+    // ==================== 10. PORTAL PETERNAK (TAMBAH 4 FOTO & KELOLA STOK) ====================
+    function renderPhotoUploadSlots() {
+      const grid = document.getElementById('farmer-photo-slots-grid');
+      if (!grid) return;
+
+      const uploadedCount = Object.values(farmerPhotoDraft).filter(Boolean).length;
+      const badge = document.getElementById('photo-completeness-badge');
+      if (badge) {
+        if (uploadedCount === 4) {
+          badge.className = 'px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-brand-700 text-white shadow-2xs';
+          badge.textContent = '✓ 4/4 Foto Lengkap';
+        } else {
+          badge.className = 'px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200';
+          badge.textContent = `${uploadedCount}/4 Foto Terunggah`;
+        }
+      }
+
+      grid.innerHTML = PHOTO_ANGLE_CONFIG.map(slot => {
+        const photoData = farmerPhotoDraft[slot.key];
+        return `
+          <div id="slot-card-${slot.key}" class="rounded-2xl border-2 ${photoData ? 'border-brand-600 bg-white' : 'border-dashed border-emerald-300 bg-white/90 hover:border-brand-500'} p-3 transition-all flex flex-col justify-between">
+            <input
+              type="file"
+              id="photo-input-${slot.key}"
+              accept="image/*"
+              onchange="handlePhotoSlotUpload('${slot.key}', event)"
+              class="hidden"
+            />
+
+            <div class="flex items-center justify-between gap-1.5 mb-2">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-100 text-brand-900">
+                ${slot.step}
+              </span>
+              <span class="text-[10px] font-bold ${photoData ? 'text-brand-700' : 'text-amber-600'}">
+                ${photoData ? '✓ Terunggah' : 'Wajib'}
+              </span>
+            </div>
+
+            ${photoData ? `
+              <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 h-28 flex items-center justify-center mb-2">
+                <img src="${photoData}" alt="${slot.label}" class="w-full h-full object-cover" />
+              </div>
+              <div class="space-y-1.5">
+                <div class="text-xs font-extrabold text-slate-900 leading-tight">${slot.label}</div>
+                <div class="flex items-center gap-1.5 pt-1">
+                  <button type="button" onclick="document.getElementById('photo-input-${slot.key}').click()" class="flex-1 py-1.5 px-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-800 border border-brand-200 text-[11px] font-bold transition-colors">
+                    Ganti
+                  </button>
+                  <button type="button" onclick="removePhotoSlot('${slot.key}')" class="py-1.5 px-2.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-bold transition-colors">
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            ` : `
+              <button type="button" onclick="document.getElementById('photo-input-${slot.key}').click()" class="w-full text-left flex-1 flex flex-col items-center justify-center text-center py-3 px-2 rounded-xl hover:bg-brand-50/60 transition-colors focus:outline-none">
+                <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center mb-1.5 border border-brand-200">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </div>
+                <div class="text-xs font-extrabold text-slate-900">${slot.label}</div>
+                <div class="text-[10px] text-slate-500 mt-0.5 leading-snug">${slot.desc}</div>
+                <span class="mt-2 inline-block px-2.5 py-1 rounded-lg bg-brand-700 text-white text-[10px] font-bold">
+                  + Pilih Foto
+                </span>
+              </button>
+            `}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handlePhotoSlotUpload(angle, event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('Format Tidak Didukung', 'Silakan pilih file gambar (JPG, PNG, atau WEBP).', 'warning');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        farmerPhotoDraft[angle] = e.target.result;
+        renderPhotoUploadSlots();
+        const meta = PHOTO_ANGLE_CONFIG.find(s => s.key === angle);
+        showToast('Foto Berhasil Diunggah', `${meta ? meta.label : angle} siap dipublikasikan.`);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removePhotoSlot(angle) {
+      farmerPhotoDraft[angle] = null;
+      const input = document.getElementById(`photo-input-${angle}`);
+      if (input) input.value = '';
+      renderPhotoUploadSlots();
+    }
+
+    function generateAngleCanvasPreview(jenis, angleKey, angleTitle, angleSub) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 480;
+      canvas.height = 320;
+      const ctx = canvas.getContext('2d');
+
+      const grad = ctx.createLinearGradient(0, 0, 0, 320);
+      grad.addColorStop(0, '#ECFDF5');
+      grad.addColorStop(1, '#FFFFFF');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 480, 320);
+
+      ctx.strokeStyle = '#16A34A';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(10, 10, 460, 300);
+
+      ctx.fillStyle = '#15803D';
+      ctx.fillRect(24, 24, 240, 30);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`TERNAKACEH • ${angleTitle.toUpperCase()}`, 34, 44);
+
+      const isGoat = jenis.includes('Kambing') || jenis.includes('Domba');
+      const isKerbau = jenis.includes('Kerbau');
+      const coatColor = isKerbau ? '#334155' : (jenis.includes('Domba') ? '#CBD5E1' : (isGoat ? '#D97706' : '#9A3412'));
+
+      ctx.save();
+      if (angleKey === 'gigi') {
+        ctx.fillStyle = '#FDA4AF';
+        ctx.beginPath();
+        ctx.roundRect(120, 155, 240, 58, 18);
+        ctx.fill();
+
+        ctx.fillStyle = '#FEF3C7';
+        ctx.strokeStyle = '#64748B';
+        ctx.lineWidth = 2;
+        ctx.fillRect(142, 132, 24, 34);
+        ctx.strokeRect(142, 132, 24, 34);
+        ctx.fillRect(314, 132, 24, 34);
+        ctx.strokeRect(314, 132, 24, 34);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.strokeStyle = '#15803D';
+        ctx.lineWidth = 3;
+        ctx.fillRect(184, 102, 46, 66);
+        ctx.strokeRect(184, 102, 46, 66);
+        ctx.fillRect(250, 102, 46, 66);
+        ctx.strokeRect(250, 102, 46, 66);
+      } else if (angleKey === 'depan') {
+        ctx.fillStyle = coatColor;
+        ctx.beginPath();
+        ctx.roundRect(175, 135, 130, 95, 28);
+        ctx.fill();
+        ctx.fillRect(190, 215, 22, 45);
+        ctx.fillRect(268, 215, 22, 45);
+        ctx.beginPath();
+        ctx.roundRect(192, 82, 96, 82, 26);
+        ctx.fill();
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(192, 95);
+        ctx.quadraticCurveTo(155, 75, 175, 62);
+        ctx.moveTo(288, 95);
+        ctx.quadraticCurveTo(325, 75, 305, 62);
+        ctx.stroke();
+        ctx.fillStyle = '#0F172A';
+        ctx.beginPath();
+        ctx.arc(216, 118, 5, 0, Math.PI * 2);
+        ctx.arc(264, 118, 5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (angleKey === 'belakang') {
+        ctx.fillStyle = coatColor;
+        ctx.beginPath();
+        ctx.roundRect(168, 88, 144, 115, 36);
+        ctx.fill();
+        ctx.fillRect(185, 185, 26, 68);
+        ctx.fillRect(269, 185, 26, 68);
+        ctx.fillStyle = '#0F172A';
+        ctx.fillRect(183, 245, 30, 12);
+        ctx.fillRect(267, 245, 30, 12);
+        ctx.strokeStyle = '#1E293B';
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.moveTo(240, 108);
+        ctx.lineTo(240, 215);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = coatColor;
+        ctx.beginPath();
+        ctx.roundRect(135, 108, 225, 96, 34);
+        ctx.fill();
+        ctx.fillRect(156, 192, 20, 62);
+        ctx.fillRect(186, 194, 20, 60);
+        ctx.fillRect(296, 192, 20, 62);
+        ctx.fillRect(324, 194, 20, 60);
+        ctx.beginPath();
+        ctx.roundRect(82, 92, 74, 58, 20);
+        ctx.fill();
+        ctx.fillStyle = '#0F172A';
+        ctx.beginPath();
+        ctx.arc(106, 112, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      ctx.fillStyle = '#064E3B';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.fillText(`${jenis} — ${angleTitle}`, 24, 282);
+      ctx.fillStyle = '#475569';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(angleSub, 24, 300);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    function fillAutoSamplePhotos() {
+      const jenis = document.getElementById('f-jenis').value || 'Sapi Aceh';
+      PHOTO_ANGLE_CONFIG.forEach(slot => {
+        farmerPhotoDraft[slot.key] = generateAngleCanvasPreview(jenis, slot.key, slot.label, slot.desc);
+      });
+      renderPhotoUploadSlots();
+      showToast('4 Foto Contoh Terisi', `Seluruh sudut foto & gigi untuk ${jenis} siap diterbitkan.`);
+    }
+
+    function handleAddLivestock(e) {
+      e.preventDefault();
+
+      const missingAngles = PHOTO_ANGLE_CONFIG.filter(slot => !farmerPhotoDraft[slot.key]);
+      if (missingAngles.length > 0) {
+        const names = missingAngles.map(m => m.label).join(', ');
+        showToast(
+          `Foto Belum Lengkap (${4 - missingAngles.length}/4)`,
+          `Harap unggah foto: ${names} sebelum menerbitkan ternak.`,
+          'warning'
+        );
+        return;
+      }
+
+      const nama = document.getElementById('f-nama').value.trim();
+      const jenis = document.getElementById('f-jenis').value;
+      const peruntukan = document.getElementById('f-peruntukan').value;
+      const lokasi = document.getElementById('f-lokasi').value;
+      const kelamin = document.getElementById('f-kelamin').value;
+      const bobot = parseInt(document.getElementById('f-bobot').value, 10);
+      const usia = document.getElementById('f-usia').value.trim();
+      const harga = parseInt(document.getElementById('f-harga').value, 10);
+      const skkh = document.getElementById('f-skkh').value.trim();
+      const peternak = document.getElementById('f-peternak').value.trim();
+      const patungan = document.getElementById('f-patungan').checked;
+      const titipRawat = document.getElementById('f-titip').checked;
+
+      const newItem = {
+        id: `TRN-0${livestockData.length + 1}`,
+        nama,
+        jenis,
+        peruntukan,
+        lokasi,
+        kecamatan: `Kec. ${lokasi}`,
+        bobot,
+        usia,
+        kelamin,
+        harga,
+        peternak,
+        kyc: true,
+        skkh,
+        status: 'Tersedia',
+        patungan,
+        slots: patungan ? Array.from({ length: 7 }, (_, i) => ({ no: i + 1, name: null, paid: false })) : [],
+        titipRawat,
+        photos: { ...farmerPhotoDraft },
+        colorHex: jenis === 'Kerbau' ? '#334155' : (jenis.includes('Sapi') ? '#9A3412' : '#D97706'),
+        deskripsi: `${nama} dalam kondisi prima, pakan alami teratur, dilengkapi 4 sudut foto verifikasi fisik & gigi, serta sertifikat dokter hewan ${skkh}.`
+      };
+
+      livestockData.unshift(newItem);
+      farmerPhotoDraft = { samping: null, depan: null, gigi: null, belakang: null };
+      renderFarmerStockTable();
+      renderCatalog();
+      document.getElementById('farmer-add-form').reset();
+      renderPhotoUploadSlots();
+      showToast('Ternak Berhasil Diterbitkan!', `${nama} beserta 4 foto sudut & gigi kini tayang di Katalog.`);
+    }
+
+    function renderFarmerStockTable() {
+      document.getElementById('farmer-stock-count').textContent = `${livestockData.length} Listing`;
+      const tbody = document.getElementById('farmer-stock-tbody');
+
+      tbody.innerHTML = livestockData.map(item => `
+        <tr class="hover:bg-slate-50/80">
+          <td class="py-3.5 pr-3">
+            <div class="flex items-center gap-2.5">
+              ${item.photos && item.photos.samping
+                ? `<img src="${item.photos.samping}" alt="${item.nama}" class="w-11 h-11 rounded-xl object-cover border border-emerald-200 shrink-0" />`
+                : `<div class="w-11 h-11 rounded-xl bg-brand-50 border border-emerald-200 flex items-center justify-center text-brand-700 font-extrabold text-xs shrink-0">${item.jenis.slice(0, 2).toUpperCase()}</div>`
+              }
+              <div>
+                <div class="font-bold text-slate-900 text-xs sm:text-sm">${item.nama}</div>
+                <div class="text-[11px] text-slate-500 flex flex-wrap items-center gap-1.5 mt-0.5">
+                  <span>${item.jenis} • ${item.lokasi}</span>
+                  <button type="button" onclick="openDetailModal('${item.id}')" class="px-1.5 py-0.5 rounded bg-brand-100 hover:bg-brand-200 text-brand-800 text-[10px] font-bold transition-colors">
+                    📷 4/4 Foto Sudut & Gigi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-3">
+            <div class="font-extrabold text-brand-700 text-xs">${formatRupiah(item.harga)}</div>
+            <div class="text-[11px] text-slate-500">${item.bobot} kg</div>
+          </td>
+          <td class="py-3.5 px-3">
+            <span class="px-2 py-0.5 rounded bg-brand-50 text-brand-800 border border-brand-200 font-mono text-[11px] font-bold">
+              ${item.skkh}
+            </span>
+          </td>
+          <td class="py-3.5 pl-3 text-right">
+            <select onchange="updateLivestockStatus('${item.id}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${item.status === 'Tersedia' ? 'bg-brand-50 border-brand-300 text-brand-800' : (item.status === 'Dipesan (DP)' ? 'bg-amber-50 border-amber-300 text-amber-800' : 'bg-slate-100 border-slate-300 text-slate-700')}">
+              <option value="Tersedia" ${item.status === 'Tersedia' ? 'selected' : ''}>Tersedia</option>
+              <option value="Dipesan (DP)" ${item.status === 'Dipesan (DP)' ? 'selected' : ''}>Dipesan (DP)</option>
+              <option value="Terjual" ${item.status === 'Terjual' ? 'selected' : ''}>Terjual</option>
+            </select>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateLivestockStatus(id, newStatus) {
+      const item = livestockData.find(t => t.id === id);
+      if (!item) return;
+      item.status = newStatus;
+      renderFarmerStockTable();
+      renderCatalog();
+      showToast('Status Stok Diperbarui', `${item.nama} diubah menjadi "${newStatus}".`);
+    }
+
+    // ==================== 11. ADMIN VERIFICATION & ESCROW TAB ====================
+    function renderAdminTab() {
+      updateHeaderBadges();
+      const pendingCount = adminVerifications.filter(v => v.status === 'Menunggu Verifikasi').length;
+      document.getElementById('admin-queue-count').textContent = `${pendingCount} Pengajuan`;
+      document.getElementById('admin-pending-badge').textContent = pendingCount;
+
+      const list = document.getElementById('admin-verification-list');
+      list.innerHTML = adminVerifications.map(v => `
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold text-slate-500">${v.id}</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${v.status === 'Terverifikasi KYC & SKKH' ? 'bg-brand-100 text-brand-800' : 'bg-amber-100 text-amber-800'}">
+                ${v.status}
+              </span>
+            </div>
+            <div class="text-sm font-extrabold text-slate-900">${v.kandang}</div>
+            <div class="text-xs text-slate-600">Komoditas: <strong>${v.ternak}</strong> • Lokasi: ${v.lokasi} • No. SKKH: <span class="font-mono font-bold">${v.skkhNo}</span></div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            ${v.status === 'Menunggu Verifikasi' ? `
+              <button onclick="approveAdminVerification('${v.id}')" class="px-4 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold shadow-sm transition-colors">
+                ✓ Setujui KYC & SKKH
+              </button>
+            ` : `
+              <span class="text-xs font-bold text-brand-700">✓ Aktif di Katalog</span>
+            `}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function approveAdminVerification(verId) {
+      const ver = adminVerifications.find(v => v.id === verId);
+      if (!ver) return;
+
+      ver.status = 'Terverifikasi KYC & SKKH';
+      livestockData.unshift({
+        id: `TRN-0${livestockData.length + 1}`,
+        nama: `${ver.ternak} — Mitra Terverifikasi`,
+        jenis: ver.ternak.includes('Kerbau') ? 'Kerbau' : 'Sapi Aceh',
+        peruntukan: 'Kurban',
+        lokasi: ver.lokasi,
+        kecamatan: `Pusat ${ver.lokasi}`,
+        bobot: ver.ternak.includes('440') ? 440 : 305,
+        usia: '2.5 Tahun (Poel 1)',
+        kelamin: 'Jantan',
+        harga: ver.ternak.includes('440') ? 29800000 : 20400000,
+        peternak: ver.kandang,
+        kyc: true,
+        skkh: ver.skkhNo,
+        status: 'Tersedia',
+        patungan: true,
+        slots: Array.from({ length: 7 }, (_, i) => ({ no: i + 1, name: null, paid: false })),
+        titipRawat: true,
+        photos: null,
+        colorHex: ver.ternak.includes('Kerbau') ? '#334155' : '#9A3412',
+        deskripsi: `Ternak baru saja lolos audit verifikasi kandang KYC dan validasi sertifikat ${ver.skkhNo} oleh tim TernakAceh.`
+      });
+
+      renderAdminTab();
+      renderCatalog();
+      showToast('Verifikasi Disetujui', `${ver.kandang} resmi mendapat lencana KYC & SKKH.`);
+    }
+
+    // ==================== 12. INITIALIZE ON LOAD ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCatalog();
+      renderPhotoUploadSlots();
+      updateHeaderBadges();
+    });
+  </script>
+</body>
+</html>

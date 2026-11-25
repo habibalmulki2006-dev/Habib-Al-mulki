@@ -65,8 +65,15 @@ export function validateAuthCredentials({
   displayName = '',
   isRegister = false,
 }) {
-  const cleanUser = typeof username === 'string' ? username.trim() : '';
-  const cleanPass = typeof password === 'string' ? password : '';
+  if (typeof username !== 'string' || typeof password !== 'string') {
+    return {
+      valid: false,
+      error: 'Format username atau password tidak valid.',
+    };
+  }
+
+  const cleanUser = username.trim();
+  const cleanPass = password;
 
   if (!/^[a-zA-Z0-9._-]{3,32}$/.test(cleanUser)) {
     return {
@@ -83,11 +90,30 @@ export function validateAuthCredentials({
   }
 
   if (isRegister) {
-    const cleanName = typeof displayName === 'string' ? displayName.trim() : '';
-    if (cleanName.length < 2 || cleanName.length > 80) {
+    if (
+      cleanPass.length < 8 ||
+      !/[a-z]/.test(cleanPass) ||
+      !/[A-Z]/.test(cleanPass) ||
+      !/\d/.test(cleanPass)
+    ) {
       return {
         valid: false,
-        error: 'Nama lengkap harus diisi (2–80 karakter).',
+        error: 'Password baru minimal 8 karakter dan wajib mengandung huruf besar, huruf kecil, serta angka.',
+      };
+    }
+
+    if (typeof displayName !== 'string') {
+      return {
+        valid: false,
+        error: 'Nama lengkap harus berupa teks yang valid.',
+      };
+    }
+
+    const cleanName = displayName.trim();
+    if (cleanName.length < 2 || cleanName.length > 80 || /[<>]/.test(cleanName)) {
+      return {
+        valid: false,
+        error: 'Nama lengkap harus 2–80 karakter tanpa simbol < atau >.',
       };
     }
   }

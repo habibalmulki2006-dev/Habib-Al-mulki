@@ -14,6 +14,15 @@ import {
   validateLivestockSubmission,
 } from './src/utils/domain.js';
 import { ROLES, VALID_ROLES, validateAuthCredentials } from './src/utils/rbac.js';
+import {
+  containsHtmlMarkup,
+  containsSqlInjectionPattern,
+  hasUnsafeObjectKeys,
+  isValidEmail,
+  isValidEntityId,
+  sanitizeImageSrc,
+  sanitizePlainText,
+} from './src/utils/security.js';
 
 type UserRole = 'user' | 'operator' | 'admin';
 
@@ -25,6 +34,7 @@ interface StoredUser {
   role: UserRole;
   provider: 'password' | 'google';
   passwordHash: string | null;
+  tokenVersion?: number;
   createdAt: string;
 }
 
@@ -41,6 +51,8 @@ interface DatabaseSchema {
 interface SessionPayload {
   uid: string;
   role: UserRole;
+  jti?: string;
+  ver?: number;
   exp: number;
 }
 
@@ -52,7 +64,9 @@ const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 const SESSION_COOKIE_NAME = 'ta_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24;
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
-const DB_DIR = path.resolve(process.cwd(), '.data');
+const DB_DIR = process.env.TERNAKACEH_DB_DIR
+  ? path.resolve(process.env.TERNAKACEH_DB_DIR)
+  : path.resolve(process.cwd(), '.data');
 const DB_FILE = path.join(DB_DIR, 'ternakaceh-db.json');
 const BOOTSTRAP_ADMIN_EMAIL = 'habibalmulki2006@gmail.com';
 const GOOGLE_JWKS_URL =
@@ -202,6 +216,23 @@ function loadDatabase(): DatabaseSchema {
     if (parsed.users.length === 0) {
       parsed.users = createSeededUsers();
       saveDatabase(parsed);
+    } else {
+      const expectedSeeds = [
+        { id: 'usr-dummy-user', pass: process.env.SEED_USER_PASSWORD || 'UserAceh#2026' },
+        { id: 'usr-dummy-operator', pass: process.env.SEED_OPERATOR_PASSWORD || 'OperatorAceh#2026' },
+        { id: 'usr-dummy-admin', pass: process.env.SEED_ADMIN_PASSWORD || 'AdminAceh#2026' },
+      ];
+      let changed = false;
+      for (const seed of expectedSeeds) {
+        const existingUser = parsed.users.find((u) => u.id === seed.id);
+        if (existingUser && !verifyPassword(seed.pass, existingUser.passwordHash)) {
+          existingUser.passwordHash = hashPassword(seed.pass);
+          changed = true;
+        }
+      }
+      if (changed) {
+        saveDatabase(parsed);
+      }
     }
     return parsed;
   } catch {
@@ -234,20 +265,87 @@ function parseCookies(req: Request): Record<string, string> {
   return result;
 }
 
-function extractSessionUser(req: Request): StoredUser | null {
-  const authHeader = req.headers.authorization;
-  let token = '';
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.slice(7).trim();
-  } else {
-    const cookies = parseCookies(req);
-    token = cookies[SESSION_COOKIE_NAME] || '';
-  }
+const revokedTokens = new Map<string, number>();
+const authAttempts = new Map<string, { count: number; resetAt: number }>();
 
+function pruneSecurityMaps() {
+  const now = Date.now();
+  for (const [jti, exp] of revokedTokens.entries()) {
+    if (exp <= now) revokedTokens.delete(jti);
+  }
+  for (const [key, entry] of authAttempts.entries()) {
+    if (entry.resetAt <= now) authAttempts.delete(key);
+  }
+}
+
+function getClientIp(req: Request): string {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded.trim()) {
+    return forwarded.split(',')[0].trim();
+  }
+  return req.ip || 'unknown';
+}
+
+function createAuthRateLimiter(maxAttempts = 15, windowMs = 5 * 60 * 1000) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    pruneSecurityMaps();
+    const key = `${getClientIp(req)}:${req.path}`;
+    const now = Date.now();
+    const entry = authAttempts.get(key);
+
+    if (entry && entry.resetAt > now && entry.count >= maxAttempts) {
+      const waitMinutes = Math.max(1, Math.ceil((entry.resetAt - now) / 60000));
+      res.status(429).json({
+        error: `Terlalu banyak percobaan autentikasi. Silakan coba kembali dalam ${waitMinutes} menit.`,
+      });
+      return;
+    }
+
+    if (!entry || entry.resetAt <= now) {
+      authAttempts.set(key, { count: 1, resetAt: now + windowMs });
+    } else {
+      entry.count += 1;
+    }
+    next();
+  };
+}
+
+function clearAuthRateLimit(req: Request) {
+  const key = `${getClientIp(req)}:${req.path}`;
+  authAttempts.delete(key);
+}
+
+function issueUserToken(user: StoredUser): string {
+  return signSessionToken({
+    uid: user.id,
+    role: user.role,
+    jti: crypto.randomUUID(),
+    ver: user.tokenVersion ?? 0,
+    exp: Date.now() + SESSION_TTL_MS,
+  });
+}
+
+function extractBearerOrCookieToken(req: Request): string {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.slice(7).trim();
+  }
+  const cookies = parseCookies(req);
+  return cookies[SESSION_COOKIE_NAME] || '';
+}
+
+function extractSessionUser(req: Request): StoredUser | null {
+  const token = extractBearerOrCookieToken(req);
   const payload = verifySessionToken(token);
   if (!payload) return null;
+  if (payload.jti && revokedTokens.has(payload.jti)) return null;
+
   const user = db.users.find((u) => u.id === payload.uid);
-  return user || null;
+  if (!user) return null;
+  if (typeof payload.ver === 'number' && (user.tokenVersion ?? 0) !== payload.ver) {
+    return null;
+  }
+  return user;
 }
 
 function setSessionCookie(req: Request, res: Response, token: string) {
@@ -348,11 +446,62 @@ async function verifyFirebaseGoogleIdToken(idToken: string) {
   };
 }
 
+function securityHeadersMiddleware(_req: Request, res: Response, next: NextFunction) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.firebaseapp.com https://*.googleapis.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: blob: https://*.googleusercontent.com",
+    "connect-src 'self' ws: wss: https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com",
+    "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'self' https://aistudio.google.com https://*.google.com",
+  ].join('; ');
+  res.setHeader('Content-Security-Policy', csp);
+  next();
+}
+
+function rejectUnsafePayloads(req: Request, res: Response, next: NextFunction) {
+  if (
+    hasUnsafeObjectKeys(req.body) ||
+    hasUnsafeObjectKeys(req.query) ||
+    hasUnsafeObjectKeys(req.params)
+  ) {
+    res.status(400).json({ error: 'Payload permintaan mengandung struktur kunci yang tidak diizinkan.' });
+    return;
+  }
+  next();
+}
+
 function requireCsrfHeader(req: Request, res: Response, next: NextFunction) {
   if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
     next();
     return;
   }
+
+  const origin = req.headers.origin;
+  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host;
+  if (origin && host) {
+    try {
+      const originHost = new URL(origin).host;
+      if (originHost !== host) {
+        res.status(403).json({ error: 'Asal permintaan (Origin) tidak cocok dengan host aplikasi.' });
+        return;
+      }
+    } catch {
+      res.status(403).json({ error: 'Header Origin permintaan tidak valid.' });
+      return;
+    }
+  }
+
   const customHeader = req.headers['x-requested-with'];
   if (customHeader !== 'TernakAceh') {
     res.status(403).json({ error: 'Header keamanan permintaan tidak valid.' });
@@ -416,21 +565,25 @@ function buildWorkspaceForUser(user: StoredUser | null) {
 
 async function startServer() {
   const app = express();
+  app.disable('x-powered-by');
   app.set('trust proxy', 1);
+  app.use(securityHeadersMiddleware);
   app.use(express.json({ limit: '15mb' }));
+  app.use(rejectUnsafePayloads);
 
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true, service: 'ternakaceh-api' });
   });
 
   app.use('/api', requireCsrfHeader);
+  const authLimiter = createAuthRateLimiter(15, 5 * 60 * 1000);
 
   app.get('/api/auth/me', (req, res) => {
     const user = extractSessionUser(req);
     res.json({ user: user ? sanitizeUser(user) : null });
   });
 
-  app.post('/api/auth/login', (req, res) => {
+  app.post('/api/auth/login', authLimiter, (req, res) => {
     const { username, password } = req.body || {};
     const validation = validateAuthCredentials({ username, password });
     if (!validation.valid) {
@@ -445,16 +598,13 @@ async function startServer() {
       return;
     }
 
-    const token = signSessionToken({
-      uid: user.id,
-      role: user.role,
-      exp: Date.now() + SESSION_TTL_MS,
-    });
+    clearAuthRateLimit(req);
+    const token = issueUserToken(user);
     setSessionCookie(req, res, token);
     res.json({ token, user: sanitizeUser(user) });
   });
 
-  app.post('/api/auth/register', (req, res) => {
+  app.post('/api/auth/register', authLimiter, (req, res) => {
     const { username, password, displayName, email } = req.body || {};
     const validation = validateAuthCredentials({
       username,
@@ -467,41 +617,50 @@ async function startServer() {
       return;
     }
 
+    const cleanName = sanitizePlainText(displayName, 80);
+    if (containsSqlInjectionPattern(cleanName) || containsHtmlMarkup(cleanName)) {
+      res.status(400).json({ error: 'Nama lengkap mengandung pola karakter yang tidak diizinkan.' });
+      return;
+    }
+
     const cleanUsername = String(username).trim().toLowerCase();
     if (db.users.some((u) => u.username.toLowerCase() === cleanUsername)) {
       res.status(409).json({ error: 'Username sudah terdaftar. Gunakan username lain.' });
       return;
     }
 
+    if (typeof email === 'string' && email.trim() && !isValidEmail(email)) {
+      res.status(400).json({ error: 'Format email tidak valid.' });
+      return;
+    }
+
     const cleanEmail =
-      typeof email === 'string' && email.includes('@')
+      typeof email === 'string' && isValidEmail(email)
         ? email.trim().toLowerCase()
         : `${cleanUsername}@ternakaceh.local`;
 
     const newUser: StoredUser = {
       id: `usr-${crypto.randomUUID().slice(0, 12)}`,
       username: cleanUsername,
-      displayName: String(displayName).trim(),
+      displayName: cleanName,
       email: cleanEmail,
       role: 'user',
       provider: 'password',
       passwordHash: hashPassword(String(password)),
+      tokenVersion: 0,
       createdAt: new Date().toISOString(),
     };
 
     db.users.push(newUser);
     saveDatabase(db);
+    clearAuthRateLimit(req);
 
-    const token = signSessionToken({
-      uid: newUser.id,
-      role: newUser.role,
-      exp: Date.now() + SESSION_TTL_MS,
-    });
+    const token = issueUserToken(newUser);
     setSessionCookie(req, res, token);
     res.status(201).json({ token, user: sanitizeUser(newUser) });
   });
 
-  app.post('/api/auth/google', async (req, res) => {
+  app.post('/api/auth/google', authLimiter, async (req, res) => {
     const { idToken } = req.body || {};
     if (typeof idToken !== 'string' || !idToken.trim()) {
       res.status(400).json({ error: 'Token Google tidak tersedia.' });
@@ -515,31 +674,30 @@ async function startServer() {
       );
 
       const isBootstrapAdmin = verified.email === BOOTSTRAP_ADMIN_EMAIL;
+      const safeDisplayName = sanitizePlainText(verified.name, 80).replace(/[<>]/g, '') || 'Pengguna Google';
       if (!user) {
         user = {
           id: verified.uid,
-          username: verified.email.split('@')[0],
-          displayName: verified.name,
+          username: verified.email.split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 32),
+          displayName: safeDisplayName,
           email: verified.email,
           role: isBootstrapAdmin ? 'admin' : 'user',
           provider: 'google',
           passwordHash: null,
+          tokenVersion: 0,
           createdAt: new Date().toISOString(),
         };
         db.users.push(user);
       } else {
-        user.displayName = verified.name;
+        user.displayName = safeDisplayName;
         if (isBootstrapAdmin) {
           user.role = 'admin';
         }
       }
       saveDatabase(db);
+      clearAuthRateLimit(req);
 
-      const token = signSessionToken({
-        uid: user.id,
-        role: user.role,
-        exp: Date.now() + SESSION_TTL_MS,
-      });
+      const token = issueUserToken(user);
       setSessionCookie(req, res, token);
       res.json({ token, user: sanitizeUser(user) });
     } catch (error) {
@@ -550,6 +708,11 @@ async function startServer() {
   });
 
   app.post('/api/auth/logout', (req, res) => {
+    const token = extractBearerOrCookieToken(req);
+    const payload = verifySessionToken(token);
+    if (payload?.jti) {
+      revokedTokens.set(payload.jti, payload.exp);
+    }
     clearSessionCookie(req, res);
     res.json({ ok: true });
   });
@@ -603,10 +766,10 @@ async function startServer() {
           : [],
         titipRawat: Boolean(formData.titipRawat),
         photos: {
-          samping: photos.samping,
-          depan: photos.depan,
-          gigi: photos.gigi,
-          belakang: photos.belakang,
+          samping: sanitizeImageSrc(photos.samping),
+          depan: sanitizeImageSrc(photos.depan),
+          gigi: sanitizeImageSrc(photos.gigi),
+          belakang: sanitizeImageSrc(photos.belakang),
         },
         colorHex:
           formData.jenis === 'Kerbau'
@@ -614,7 +777,7 @@ async function startServer() {
             : String(formData.jenis).includes('Sapi')
               ? '#9A3412'
               : '#D97706',
-        deskripsi: `${String(formData.nama).trim()} dalam kondisi prima, pakan alami teratur, dilengkapi 4 sudut foto verifikasi fisik & gigi, serta sertifikat dokter hewan ${String(formData.skkh).trim()}.`,
+        deskripsi: `${sanitizePlainText(formData.nama, 150)} dalam kondisi prima, pakan alami teratur, dilengkapi 4 sudut foto verifikasi fisik & gigi, serta sertifikat dokter hewan ${sanitizePlainText(formData.skkh, 60)}.`,
       };
 
       db.livestockData.unshift(newItem);
@@ -628,8 +791,12 @@ async function startServer() {
     requireAuth([ROLES.OPERATOR as UserRole, ROLES.ADMIN as UserRole]),
     (req: AuthedRequest, res) => {
       const { id } = req.params;
+      if (!isValidEntityId(id)) {
+        res.status(400).json({ error: 'ID ternak tidak valid.' });
+        return;
+      }
       const { status } = req.body || {};
-      if (!['Tersedia', 'Dipesan (DP)', 'Terjual'].includes(status)) {
+      if (typeof status !== 'string' || !['Tersedia', 'Dipesan (DP)', 'Terjual'].includes(status)) {
         res.status(400).json({ error: 'Status stok tidak valid.' });
         return;
       }
@@ -648,6 +815,10 @@ async function startServer() {
 
   app.post('/api/negotiations/offer', requireAuth(), (req: AuthedRequest, res) => {
     const { ternakId, offerPrice } = req.body || {};
+    if (!isValidEntityId(ternakId)) {
+      res.status(400).json({ error: 'ID ternak tidak valid.' });
+      return;
+    }
     const item = db.livestockData.find((t) => t.id === ternakId);
     if (!item) {
       res.status(404).json({ error: 'Ternak tidak ditemukan.' });
@@ -696,8 +867,13 @@ async function startServer() {
 
   app.post('/api/negotiations/chat', requireAuth(), (req: AuthedRequest, res) => {
     const { ternakId, text } = req.body || {};
+    if (!isValidEntityId(ternakId)) {
+      res.status(400).json({ error: 'ID ternak tidak valid.' });
+      return;
+    }
     const item = db.livestockData.find((t) => t.id === ternakId);
-    if (!item || typeof text !== 'string' || !text.trim()) {
+    const cleanText = sanitizePlainText(text, 500);
+    if (!item || !cleanText || containsSqlInjectionPattern(cleanText)) {
       res.status(400).json({ error: 'Pesan atau ternak tidak valid.' });
       return;
     }
@@ -708,7 +884,7 @@ async function startServer() {
     db.chatHistory[item.id].push({
       sender: 'buyer',
       time: 'Baru saja',
-      text: text.trim().slice(0, 500),
+      text: cleanText,
     });
     db.chatHistory[item.id].push({
       sender: 'seller',
@@ -733,9 +909,19 @@ async function startServer() {
       addonKatering,
     } = req.body || {};
 
+    if (!isValidEntityId(ternakId)) {
+      res.status(400).json({ error: 'ID ternak tidak valid.' });
+      return;
+    }
+
     const item = db.livestockData.find((t) => t.id === ternakId);
     if (!item || item.status === 'Terjual') {
       res.status(400).json({ error: 'Ternak tidak tersedia untuk dipesan.' });
+      return;
+    }
+
+    if (!['full', 'dp', 'patungan'].includes(scheme || 'full')) {
+      res.status(400).json({ error: 'Skema transaksi tidak valid.' });
       return;
     }
 
@@ -827,6 +1013,10 @@ async function startServer() {
   });
 
   app.post('/api/orders/:orderId/logs', requireAuth(), (req: AuthedRequest, res) => {
+    if (!isValidEntityId(req.params.orderId)) {
+      res.status(400).json({ error: 'ID pesanan tidak valid.' });
+      return;
+    }
     const order = db.userOrders.find((o) => o.orderId === req.params.orderId);
     if (!order) {
       res.status(404).json({ error: 'Pesanan tidak ditemukan.' });
@@ -853,6 +1043,10 @@ async function startServer() {
   });
 
   app.post('/api/orders/:orderId/handover', requireAuth(), (req: AuthedRequest, res) => {
+    if (!isValidEntityId(req.params.orderId)) {
+      res.status(400).json({ error: 'ID pesanan tidak valid.' });
+      return;
+    }
     const order = db.userOrders.find((o) => o.orderId === req.params.orderId);
     if (!order) {
       res.status(404).json({ error: 'Pesanan tidak ditemukan.' });
@@ -898,6 +1092,10 @@ async function startServer() {
     '/api/verifications/:verId/approve',
     requireAuth([ROLES.ADMIN as UserRole]),
     (req: AuthedRequest, res) => {
+      if (!isValidEntityId(req.params.verId)) {
+        res.status(400).json({ error: 'ID verifikasi tidak valid.' });
+        return;
+      }
       const ver = db.adminVerifications.find((v) => v.id === req.params.verId);
       if (!ver) {
         res.status(404).json({ error: 'Pengajuan verifikasi tidak ditemukan.' });
@@ -939,13 +1137,82 @@ async function startServer() {
     }
   );
 
+  app.post(
+    '/api/admin/users',
+    requireAuth([ROLES.ADMIN as UserRole]),
+    (req: AuthedRequest, res) => {
+      const { displayName, username, email, password, role } = req.body || {};
+      const validation = validateAuthCredentials({
+        username,
+        password,
+        displayName,
+        isRegister: true,
+      });
+      if (!validation.valid) {
+        res.status(400).json({ error: validation.error });
+        return;
+      }
+
+      if (typeof role !== 'string' || !VALID_ROLES.includes(role)) {
+        res.status(400).json({ error: 'Peran pengguna tidak valid.' });
+        return;
+      }
+
+      const cleanName = sanitizePlainText(displayName, 80);
+      if (containsSqlInjectionPattern(cleanName) || containsHtmlMarkup(cleanName)) {
+        res.status(400).json({ error: 'Nama lengkap mengandung karakter yang tidak diizinkan.' });
+        return;
+      }
+
+      const cleanUsername = String(username).trim().toLowerCase();
+      if (db.users.some((u) => u.username.toLowerCase() === cleanUsername)) {
+        res.status(409).json({ error: 'Username sudah terdaftar di database.' });
+        return;
+      }
+
+      if (typeof email === 'string' && email.trim() && !isValidEmail(email)) {
+        res.status(400).json({ error: 'Format email tidak valid.' });
+        return;
+      }
+
+      const cleanEmail =
+        typeof email === 'string' && isValidEmail(email)
+          ? email.trim().toLowerCase()
+          : `${cleanUsername}@ternakaceh.local`;
+
+      const createdUser: StoredUser = {
+        id: `usr-${crypto.randomUUID().slice(0, 12)}`,
+        username: cleanUsername,
+        displayName: cleanName,
+        email: cleanEmail,
+        role: role as UserRole,
+        provider: 'password',
+        passwordHash: hashPassword(String(password)),
+        tokenVersion: 0,
+        createdAt: new Date().toISOString(),
+      };
+
+      db.users.push(createdUser);
+      saveDatabase(db);
+      res.status(201).json({
+        user: sanitizeUser(createdUser),
+        workspace: buildWorkspaceForUser(req.authUser!),
+      });
+    }
+  );
+
   app.patch(
     '/api/users/:userId/role',
     requireAuth([ROLES.ADMIN as UserRole]),
     (req: AuthedRequest, res) => {
       const { userId } = req.params;
+      if (!isValidEntityId(userId)) {
+        res.status(400).json({ error: 'ID pengguna tidak valid.' });
+        return;
+      }
+
       const { role } = req.body || {};
-      if (!VALID_ROLES.includes(role)) {
+      if (typeof role !== 'string' || !VALID_ROLES.includes(role)) {
         res.status(400).json({ error: 'Peran pengguna tidak valid.' });
         return;
       }
@@ -961,9 +1228,49 @@ async function startServer() {
         return;
       }
 
-      target.role = role;
+      target.role = role as UserRole;
+      target.tokenVersion = (target.tokenVersion ?? 0) + 1;
       saveDatabase(db);
       res.json({ user: sanitizeUser(target), workspace: buildWorkspaceForUser(req.authUser!) });
+    }
+  );
+
+  app.delete(
+    '/api/admin/users/:userId',
+    requireAuth([ROLES.ADMIN as UserRole]),
+    (req: AuthedRequest, res) => {
+      const { userId } = req.params;
+      if (!isValidEntityId(userId)) {
+        res.status(400).json({ error: 'ID pengguna tidak valid.' });
+        return;
+      }
+
+      if (userId === req.authUser!.id) {
+        res.status(400).json({ error: 'Anda tidak dapat menghapus akun Admin yang sedang digunakan.' });
+        return;
+      }
+
+      const target = db.users.find((u) => u.id === userId);
+      if (!target) {
+        res.status(404).json({ error: 'Akun pengguna tidak ditemukan.' });
+        return;
+      }
+
+      if (target.role === ROLES.ADMIN) {
+        const remainingAdmins = db.users.filter((u) => u.role === ROLES.ADMIN && u.id !== userId);
+        if (remainingAdmins.length === 0) {
+          res.status(400).json({ error: 'Sistem wajib menyisakan minimal 1 akun Admin aktif.' });
+          return;
+        }
+      }
+
+      db.users = db.users.filter((u) => u.id !== userId);
+      delete db.negotiatedPrices[userId];
+      saveDatabase(db);
+      res.json({
+        deletedId: userId,
+        workspace: buildWorkspaceForUser(req.authUser!),
+      });
     }
   );
 
@@ -978,6 +1285,18 @@ async function startServer() {
       res.json({ workspace: buildWorkspaceForUser(req.authUser!) });
     }
   );
+
+  app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
+    if (res.headersSent) {
+      next(err);
+      return;
+    }
+    if (err instanceof SyntaxError && 'body' in (err as any)) {
+      res.status(400).json({ error: 'Format JSON permintaan tidak valid.' });
+      return;
+    }
+    res.status(500).json({ error: 'Terjadi kesalahan internal pada server.' });
+  });
 
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

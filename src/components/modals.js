@@ -12,6 +12,7 @@ import {
   evaluateWeightShrinkage,
 } from '../utils/domain.js';
 import { escapeHtml, formatRupiah, getInitials } from '../utils/formatters.js';
+import { sanitizeHexColor, sanitizeImageSrc } from '../utils/security.js';
 import { getLivestockSVG } from './svgLivestock.js';
 import { showToast } from './toast.js';
 
@@ -154,17 +155,18 @@ export function renderInspectionAngle() {
 
   const stage = document.getElementById('detail-visual-stage');
   if (stage) {
-    if (item.photos && item.photos[mode]) {
+    const safeAnglePhoto = sanitizeImageSrc(item.photos?.[mode]);
+    if (safeAnglePhoto) {
       stage.innerHTML = `
         <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
           <span style="position:absolute; top:4px; left:4px; padding:4px 8px; border-radius:6px; background:rgba(6,95,70,0.92); color:#fff; font-size:0.6875rem; font-weight:700;">
             Foto Asli · ${escapeHtml(meta.label)}
           </span>
-          <img src="${item.photos[mode]}" alt="${escapeHtml(meta.label)}" style="max-height:208px; width:auto; object-fit:contain; border-radius:8px;" />
+          <img src="${safeAnglePhoto}" alt="${escapeHtml(meta.label)}" style="max-height:208px; width:auto; object-fit:contain; border-radius:8px;" />
         </div>
       `;
     } else {
-      stage.innerHTML = getLivestockSVG(item.jenis, item.colorHex, mode);
+      stage.innerHTML = getLivestockSVG(item.jenis, sanitizeHexColor(item.colorHex), mode);
     }
   }
 

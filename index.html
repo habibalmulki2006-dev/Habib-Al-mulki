@@ -464,10 +464,45 @@
             <div class="table-header-row">
               <div>
                 <h3 class="card-heading">Manajemen Akun &amp; Peran Pengguna</h3>
-                <p class="card-subheading">Tetapkan peran akses (User Biasa, Operator Kandang, atau Admin) pada akun terdaftar di database.</p>
+                <p class="card-subheading">Tambah akun baru (User Biasa, Operator, atau Admin), ubah peran akses, atau hapus akun di database.</p>
               </div>
               <span id="admin-user-count" class="stock-count tabular-nums">0 Akun</span>
             </div>
+
+            <form id="admin-create-user-form" class="admin-add-user-box" novalidate>
+              <div class="admin-add-user-grid">
+                <div class="field-group">
+                  <label for="admin-new-name" class="field-label">Nama Lengkap *</label>
+                  <input id="admin-new-name" type="text" required placeholder="Contoh: Tgk. Ridwan" class="input-control" />
+                </div>
+                <div class="field-group">
+                  <label for="admin-new-username" class="field-label">Username *</label>
+                  <input id="admin-new-username" type="text" required placeholder="Contoh: peternak_aceh" class="input-control" />
+                </div>
+                <div class="field-group">
+                  <label for="admin-new-email" class="field-label">Email (Opsional)</label>
+                  <input id="admin-new-email" type="email" placeholder="nama@ternakaceh.id" class="input-control" />
+                </div>
+                <div class="field-group">
+                  <label for="admin-new-password" class="field-label">Password *</label>
+                  <input id="admin-new-password" type="password" required placeholder="Min. 8 karakter (A-Z, a-z, 0-9)" class="input-control" />
+                </div>
+                <div class="field-group">
+                  <label for="admin-new-role" class="field-label">Peran *</label>
+                  <select id="admin-new-role" class="input-control">
+                    <option value="user">User Biasa</option>
+                    <option value="operator">Operator</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div class="admin-add-user-submit">
+                  <button type="submit" id="admin-create-user-btn" class="btn btn-primary btn-sm">
+                    + Tambah Akun
+                  </button>
+                </div>
+              </div>
+            </form>
+
             <div class="table-scroll">
               <table class="data-table">
                 <thead>
@@ -475,7 +510,7 @@
                     <th>Nama &amp; Username</th>
                     <th>Email</th>
                     <th>Metode Login</th>
-                    <th class="text-right">Peran Akses</th>
+                    <th class="text-right">Peran &amp; Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="admin-users-tbody"></tbody>
@@ -1052,7 +1087,7 @@
                 type="password"
                 autocomplete="new-password"
                 required
-                placeholder="Minimal 6 karakter"
+                placeholder="Min. 8 karakter (huruf besar, kecil &amp; angka)"
                 class="input-control"
               />
             </div>

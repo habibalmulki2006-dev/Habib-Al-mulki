@@ -2,6 +2,7 @@ import { PHOTO_ANGLE_CONFIG } from '../data/seed.js';
 import { filterAndSortLivestock } from '../utils/domain.js';
 import { escapeHtml, formatRupiah } from '../utils/formatters.js';
 import { ROLES, canAccessTab, getRoleLabel } from '../utils/rbac.js';
+import { sanitizeHexColor, sanitizeImageSrc } from '../utils/security.js';
 import { getLivestockSVG } from './svgLivestock.js';
 
 export function renderHeaderAndMetrics(state) {
@@ -141,10 +142,10 @@ export function renderCatalogView(state) {
             ? 'card-media-status card-media-status--sold'
             : 'card-media-status';
 
-      const mediaHtml =
-        item.photos && item.photos.samping
-          ? `<img src="${item.photos.samping}" alt="${escapeHtml(item.nama)}" class="card-media-img" referrerpolicy="no-referrer" />`
-          : getLivestockSVG(item.jenis, item.colorHex, 'samping');
+      const safeSidePhoto = sanitizeImageSrc(item.photos?.samping);
+      const mediaHtml = safeSidePhoto
+        ? `<img src="${safeSidePhoto}" alt="${escapeHtml(item.nama)}" class="card-media-img" referrerpolicy="no-referrer" />`
+        : getLivestockSVG(item.jenis, sanitizeHexColor(item.colorHex), 'samping');
 
       const extraInfo = item.patungan
         ? `Patungan ${filledSlots}/7`
@@ -260,10 +261,10 @@ export function renderPatunganView(state) {
       const isSold = item.status === 'Terjual';
       const isUnavailable = openCount === 0 || isSold;
 
-      const mediaHtml =
-        item.photos && item.photos.samping
-          ? `<img src="${item.photos.samping}" alt="${escapeHtml(item.nama)}" class="card-media-img" referrerpolicy="no-referrer" />`
-          : getLivestockSVG(item.jenis, item.colorHex, 'samping');
+      const safePatunganPhoto = sanitizeImageSrc(item.photos?.samping);
+      const mediaHtml = safePatunganPhoto
+        ? `<img src="${safePatunganPhoto}" alt="${escapeHtml(item.nama)}" class="card-media-img" referrerpolicy="no-referrer" />`
+        : getLivestockSVG(item.jenis, sanitizeHexColor(item.colorHex), 'samping');
 
       return `
         <article class="patungan-card">
@@ -515,10 +516,10 @@ export function renderFarmerStockTable(state) {
 
   tbody.innerHTML = state.livestockData
     .map((item) => {
-      const thumbHtml =
-        item.photos && item.photos.samping
-          ? `<img src="${item.photos.samping}" alt="${escapeHtml(item.nama)}" class="table-thumb" />`
-          : `<div class="table-thumb-placeholder">${escapeHtml(item.jenis.slice(0, 2).toUpperCase())}</div>`;
+      const safeThumb = sanitizeImageSrc(item.photos?.samping);
+      const thumbHtml = safeThumb
+        ? `<img src="${safeThumb}" alt="${escapeHtml(item.nama)}" class="table-thumb" />`
+        : `<div class="table-thumb-placeholder">${escapeHtml(item.jenis.slice(0, 2).toUpperCase())}</div>`;
 
       return `
         <tr>
@@ -616,9 +617,11 @@ export function renderAdminView(state) {
 
   const usersTbody = document.getElementById('admin-users-tbody');
   if (usersTbody) {
+    const adminCount = state.users.filter((u) => u.role === ROLES.ADMIN).length;
     usersTbody.innerHTML = state.users
       .map((u) => {
         const isSelf = state.currentUser && state.currentUser.id === u.id;
+        const isLastAdmin = u.role === ROLES.ADMIN && adminCount <= 1;
         return `
           <tr>
             <td>
@@ -632,18 +635,31 @@ export function renderAdminView(state) {
               </span>
             </td>
             <td class="text-right">
-              <label for="user-role-${escapeHtml(u.id)}" class="sr-only">Peran ${escapeHtml(u.displayName)}</label>
-              <select
-                id="user-role-${escapeHtml(u.id)}"
-                class="status-select"
-                data-action="change-user-role"
-                data-user-id="${escapeHtml(u.id)}"
-                ${isSelf ? 'disabled title="Admin aktif tidak dapat mengubah perannya sendiri"' : ''}
-              >
-                <option value="user" ${u.role === 'user' ? 'selected' : ''}>User Biasa</option>
-                <option value="operator" ${u.role === 'operator' ? 'selected' : ''}>Operator</option>
-                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
-              </select>
+              <div class="admin-user-actions">
+                <label for="user-role-${escapeHtml(u.id)}" class="sr-only">Peran ${escapeHtml(u.displayName)}</label>
+                <select
+                  id="user-role-${escapeHtml(u.id)}"
+                  class="status-select"
+                  data-action="change-user-role"
+                  data-user-id="${escapeHtml(u.id)}"
+                  ${isSelf ? 'disabled title="Admin aktif tidak dapat mengubah perannya sendiri"' : ''}
+                >
+                  <option value="user" ${u.role === 'user' ? 'selected' : ''}>User Biasa</option>
+                  <option value="operator" ${u.role === 'operator' ? 'selected' : ''}>Operator</option>
+                  <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                </select>
+                <button
+                  type="button"
+                  class="btn btn-danger-outline btn-xs"
+                  data-action="delete-admin-user"
+                  data-user-id="${escapeHtml(u.id)}"
+                  data-username="${escapeHtml(u.username)}"
+                  aria-label="Hapus akun ${escapeHtml(u.username)}"
+                  ${isSelf || isLastAdmin ? 'disabled title="Akun aktif atau Admin terakhir tidak dapat dihapus"' : ''}
+                >
+                  Hapus
+                </button>
+              </div>
             </td>
           </tr>
         `;

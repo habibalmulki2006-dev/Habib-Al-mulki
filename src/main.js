@@ -1,7 +1,9 @@
 import { PHOTO_ANGLE_CONFIG } from './data/seed.js';
 import {
   approveVerification,
+  createAdminUser,
   createLivestock,
+  deleteAdminUser,
   fetchAuthMe,
   fetchPublicCatalog,
   fetchWorkspace,
@@ -248,6 +250,63 @@ async function handleRegisterSubmit(event) {
   }
 }
 
+async function handleAdminCreateUser(event) {
+  event.preventDefault();
+
+  const displayName = document.getElementById('admin-new-name')?.value || '';
+  const username = document.getElementById('admin-new-username')?.value || '';
+  const email = document.getElementById('admin-new-email')?.value || '';
+  const password = document.getElementById('admin-new-password')?.value || '';
+  const role = document.getElementById('admin-new-role')?.value || 'user';
+
+  const check = validateAuthCredentials({
+    username,
+    password,
+    displayName,
+    isRegister: true,
+  });
+  if (!check.valid) {
+    showToast('Data Akun Tidak Valid', check.error, 'warning');
+    return;
+  }
+
+  const submitBtn = document.getElementById('admin-create-user-btn');
+  if (submitBtn) submitBtn.disabled = true;
+
+  try {
+    const res = await createAdminUser({ displayName, username, email, password, role });
+    applyWorkspaceData(res.workspace);
+    document.getElementById('admin-create-user-form')?.reset();
+    showToast(
+      'Akun Berhasil Ditambahkan',
+      `Akun @${res.user.username} (${getRoleLabel(res.user.role)}) tersimpan aman di database.`
+    );
+  } catch (error) {
+    showToast(
+      'Gagal Menambahkan Akun',
+      error instanceof Error ? error.message : 'Periksa kembali data akun yang dimasukkan.',
+      'warning'
+    );
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
+async function handleDeleteAdminUser(userId, username) {
+  if (!userId) return;
+  try {
+    const res = await deleteAdminUser(userId);
+    applyWorkspaceData(res.workspace);
+    showToast('Akun Dihapus', `Akun @${username || userId} telah dihapus dari database.`);
+  } catch (error) {
+    showToast(
+      'Gagal Menghapus Akun',
+      error instanceof Error ? error.message : 'Akun tidak dapat dihapus.',
+      'warning'
+    );
+  }
+}
+
 async function handleGoogleLogin() {
   setAuthError('');
   const googleBtn = document.getElementById('auth-google-btn');
@@ -416,6 +475,12 @@ function bindEvents() {
       case 'approve-admin-ver':
         await handleApproveAdminVerification(trigger.getAttribute('data-ver-id'));
         break;
+      case 'delete-admin-user':
+        await handleDeleteAdminUser(
+          trigger.getAttribute('data-user-id'),
+          trigger.getAttribute('data-username')
+        );
+        break;
       case 'reset-demo':
         try {
           const res = await resetDemoDatabase();
@@ -522,6 +587,7 @@ function bindEvents() {
 
   document.getElementById('ho-actual-weight')?.addEventListener('input', updateHandoverShrinkageUI);
   document.getElementById('farmer-add-form')?.addEventListener('submit', handleAddLivestockSubmit);
+  document.getElementById('admin-create-user-form')?.addEventListener('submit', handleAdminCreateUser);
   document.getElementById('auth-login-form')?.addEventListener('submit', handleLoginSubmit);
   document.getElementById('auth-register-form')?.addEventListener('submit', handleRegisterSubmit);
 

@@ -127,10 +127,23 @@ export async function approveVerification(verId) {
   });
 }
 
+export async function createAdminUser(payload) {
+  return apiRequest('/api/admin/users', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function updateUserRole(userId, role) {
   return apiRequest(`/api/users/${encodeURIComponent(userId)}/role`, {
     method: 'PATCH',
     body: JSON.stringify({ role }),
+  });
+}
+
+export async function deleteAdminUser(userId) {
+  return apiRequest(`/api/admin/users/${encodeURIComponent(userId)}`, {
+    method: 'DELETE',
   });
 }
 

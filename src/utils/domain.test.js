@@ -151,9 +151,14 @@ test('validateLivestockSubmission requires all 4 photos and valid numeric bounds
   assert.equal(missingPhotos.valid, false);
   assert.equal(missingPhotos.missingAngles.length, 3);
 
+  const validPhoto = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ';
   const complete = validateLivestockSubmission(
     {
       nama: 'Sapi Aceh Baru',
+      jenis: 'Sapi Aceh',
+      peruntukan: 'Kurban',
+      lokasi: 'Aceh Besar',
+      kelamin: 'Jantan',
       usia: '2.5 Tahun',
       skkh: 'SKKH-01',
       peternak: 'Tgk. Hasan',
@@ -161,13 +166,37 @@ test('validateLivestockSubmission requires all 4 photos and valid numeric bounds
       harga: 20000000,
     },
     {
-      samping: 'img1',
-      depan: 'img2',
-      gigi: 'img3',
-      belakang: 'img4',
+      samping: validPhoto,
+      depan: validPhoto,
+      gigi: validPhoto,
+      belakang: validPhoto,
     },
     angles
   );
 
   assert.equal(complete.valid, true);
+
+  const unsafePhoto = validateLivestockSubmission(
+    {
+      nama: 'Sapi Aceh Baru',
+      jenis: 'Sapi Aceh',
+      peruntukan: 'Kurban',
+      lokasi: 'Aceh Besar',
+      kelamin: 'Jantan',
+      usia: '2.5 Tahun',
+      skkh: 'SKKH-01',
+      peternak: 'Tgk. Hasan',
+      bobot: 300,
+      harga: 20000000,
+    },
+    {
+      samping: 'javascript:alert(1)',
+      depan: validPhoto,
+      gigi: validPhoto,
+      belakang: validPhoto,
+    },
+    angles
+  );
+
+  assert.equal(unsafePhoto.valid, false);
 });

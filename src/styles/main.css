@@ -2408,3 +2408,70 @@ select:focus-visible {
   font-size: 0.8125rem;
   font-weight: 600;
 }
+
+/* ==================== ADMIN USER MANAGEMENT ==================== */
+.admin-add-user-box {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+}
+
+.admin-add-user-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.admin-add-user-submit {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-user-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-danger-outline {
+  border: 1px solid #fecaca;
+  background-color: var(--bg-danger-soft);
+  color: var(--danger-700);
+  font-weight: 700;
+}
+
+.btn-danger-outline:hover:not(:disabled) {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.btn-danger-outline:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .admin-add-user-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-add-user-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-add-user-submit {
+    justify-content: stretch;
+  }
+
+  .admin-add-user-submit .btn {
+    width: 100%;
+  }
+}
+

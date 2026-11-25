@@ -3,6 +3,12 @@
  * Decoupled from DOM so all calculations, filtering, and validations are unit-testable.
  */
 
+import {
+  containsHtmlMarkup,
+  containsSqlInjectionPattern,
+  sanitizeImageSrc,
+} from './security.js';
+
 export const SHIPPING_FEES = {
   sameRegency: 150000,
   interRegency: 350000,
@@ -161,13 +167,74 @@ export function evaluateWeightShrinkage(expectedWeight, actualWeight) {
   };
 }
 
+export const ALLOWED_LIVESTOCK_TYPES = [
+  'Sapi Aceh',
+  'Sapi Limosin',
+  'Kerbau',
+  'Kambing Etawa',
+  'Domba',
+];
+
+export const ALLOWED_PERUNTUKAN = [
+  'Kurban',
+  'Akikah',
+  'Meugang / Potong',
+  'Penggemukan',
+];
+
+export const ALLOWED_LOCATIONS = [
+  'Banda Aceh',
+  'Aceh Besar',
+  'Pidie',
+  'Bireuen',
+  'Aceh Tengah',
+  'Lhokseumawe',
+  'Meulaboh',
+];
+
+export const ALLOWED_KELAMIN = ['Jantan', 'Betina'];
+
 export function validateLivestockSubmission(formData, photos, requiredAngles) {
   const errors = [];
 
-  if (!String(formData?.nama ?? '').trim()) errors.push('Nama ternak wajib diisi.');
-  if (!String(formData?.usia ?? '').trim()) errors.push('Usia & status gigi wajib diisi.');
-  if (!String(formData?.skkh ?? '').trim()) errors.push('Nomor sertifikat SKKH wajib diisi.');
-  if (!String(formData?.peternak ?? '').trim()) errors.push('Nama kandang/peternak wajib diisi.');
+  const nama = typeof formData?.nama === 'string' ? formData.nama.trim() : '';
+  const usia = typeof formData?.usia === 'string' ? formData.usia.trim() : '';
+  const skkh = typeof formData?.skkh === 'string' ? formData.skkh.trim() : '';
+  const peternak = typeof formData?.peternak === 'string' ? formData.peternak.trim() : '';
+
+  if (!nama || nama.length < 3 || nama.length > 150) {
+    errors.push('Nama ternak harus terdiri dari 3–150 karakter.');
+  }
+  if (!usia || usia.length > 60) {
+    errors.push('Usia & status gigi wajib diisi (maksimal 60 karakter).');
+  }
+  if (!skkh || !/^[a-zA-Z0-9._/-]{3,60}$/.test(skkh)) {
+    errors.push('Nomor sertifikat SKKH tidak valid.');
+  }
+  if (!peternak || peternak.length < 3 || peternak.length > 120) {
+    errors.push('Nama kandang/peternak harus 3–120 karakter.');
+  }
+
+  if (
+    [nama, usia, skkh, peternak].some(
+      (val) => containsHtmlMarkup(val) || containsSqlInjectionPattern(val)
+    )
+  ) {
+    errors.push('Input mengandung karakter atau pola yang tidak diizinkan.');
+  }
+
+  if (!ALLOWED_LIVESTOCK_TYPES.includes(formData?.jenis)) {
+    errors.push('Jenis ternak tidak valid.');
+  }
+  if (!ALLOWED_PERUNTUKAN.includes(formData?.peruntukan)) {
+    errors.push('Peruntukan ternak tidak valid.');
+  }
+  if (!ALLOWED_LOCATIONS.includes(formData?.lokasi)) {
+    errors.push('Lokasi kandang tidak valid.');
+  }
+  if (!ALLOWED_KELAMIN.includes(formData?.kelamin)) {
+    errors.push('Jenis kelamin ternak tidak valid.');
+  }
 
   const bobot = Number(formData?.bobot);
   if (!Number.isFinite(bobot) || bobot < 15 || bobot > 1200) {
@@ -175,8 +242,8 @@ export function validateLivestockSubmission(formData, photos, requiredAngles) {
   }
 
   const harga = Number(formData?.harga);
-  if (!Number.isFinite(harga) || harga < 500000) {
-    errors.push('Harga minimal Rp 500.000.');
+  if (!Number.isFinite(harga) || harga < 500000 || harga > 500000000) {
+    errors.push('Harga harus antara Rp 500.000 hingga Rp 500.000.000.');
   }
 
   const missingAngles = requiredAngles.filter((slot) => !photos?.[slot.key]);
@@ -186,6 +253,11 @@ export function validateLivestockSubmission(formData, photos, requiredAngles) {
         .map((m) => m.label)
         .join(', ')}.`
     );
+  } else {
+    const invalidPhotos = requiredAngles.filter((slot) => !sanitizeImageSrc(photos?.[slot.key]));
+    if (invalidPhotos.length > 0) {
+      errors.push('Format foto harus berupa gambar PNG, JPG, atau WEBP yang valid.');
+    }
   }
 
   return {

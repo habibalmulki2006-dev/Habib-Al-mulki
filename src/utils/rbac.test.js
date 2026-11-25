@@ -85,4 +85,29 @@ test('validateAuthCredentials enforces username, password, and registration name
     }).valid,
     true
   );
+  assert.equal(
+    validateAuthCredentials({
+      username: "' OR 1=1--",
+      password: 'Password123',
+    }).valid,
+    false
+  );
+  assert.equal(
+    validateAuthCredentials({
+      username: 'weakuser',
+      password: 'password',
+      displayName: 'Weak User',
+      isRegister: true,
+    }).valid,
+    false
+  );
+  assert.equal(
+    validateAuthCredentials({
+      username: 'xssuser',
+      password: 'Password123',
+      displayName: '<script>alert(1)</script>',
+      isRegister: true,
+    }).valid,
+    false
+  );
 });

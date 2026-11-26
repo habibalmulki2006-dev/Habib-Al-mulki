@@ -19,11 +19,13 @@ import {
   where,
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
+import { buildFirebaseSessionUser, mapFirebaseAuthError } from '../utils/authFallback.js';
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 export const OperationType = {
   CREATE: 'create',
@@ -67,37 +69,46 @@ export async function testConnection() {
 }
 
 export async function syncFirebaseUserProfile(firebaseUser) {
-  if (!firebaseUser || !firebaseUser.emailVerified) return;
+  if (!firebaseUser || !firebaseUser.emailVerified) return null;
 
   const uid = firebaseUser.uid;
   const userDocPath = `users/${uid}`;
   const privateDocPath = `users/${uid}/private/info`;
+  let profileData = null;
 
   try {
     const userRef = doc(db, 'users', uid);
     const snap = await getDoc(userRef);
     const isBootstrapAdmin =
       firebaseUser.email?.toLowerCase() === 'habibalmulki2006@gmail.com';
+    const safeDisplayName = String(
+      firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Pengguna Google'
+    )
+      .trim()
+      .slice(0, 100);
 
     if (!snap.exists()) {
+      const initialRole = isBootstrapAdmin ? 'admin' : 'user';
       await setDoc(userRef, {
         uid,
-        displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Pengguna Google',
-        role: isBootstrapAdmin ? 'admin' : 'user',
+        displayName: safeDisplayName,
+        role: initialRole,
         provider: 'google',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      profileData = { displayName: safeDisplayName, role: initialRole };
     } else {
-      await setDoc(
-        userRef,
-        {
-          ...snap.data(),
-          displayName: firebaseUser.displayName || snap.data().displayName,
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
+      const existingData = snap.data();
+      const nextRole = isBootstrapAdmin ? 'admin' : existingData.role;
+      const updatePayload = {
+        ...existingData,
+        displayName: safeDisplayName || existingData.displayName,
+        role: nextRole,
+        updatedAt: serverTimestamp(),
+      };
+      await setDoc(userRef, updatePayload, { merge: true });
+      profileData = { displayName: updatePayload.displayName, role: nextRole };
     }
 
     if (firebaseUser.email) {
@@ -107,21 +118,38 @@ export async function syncFirebaseUserProfile(firebaseUser) {
         updatedAt: serverTimestamp(),
       });
     }
+
+    return buildFirebaseSessionUser(firebaseUser, profileData);
   } catch (error) {
     const targetPath = error instanceof Error && error.message.includes('private')
       ? privateDocPath
       : userDocPath;
     handleFirestoreError(error, OperationType.WRITE, targetPath);
+    return null;
   }
 }
 
 export async function signInWithGooglePopup() {
-  const credential = await signInWithPopup(auth, googleProvider);
-  await syncFirebaseUserProfile(credential.user);
+  let credential;
+  try {
+    credential = await signInWithPopup(auth, googleProvider);
+  } catch (error) {
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    throw new Error(mapFirebaseAuthError(error, hostname, firebaseConfig.projectId));
+  }
+
+  let profile = null;
+  try {
+    profile = await syncFirebaseUserProfile(credential.user);
+  } catch {
+    profile = buildFirebaseSessionUser(credential.user);
+  }
+
   const idToken = await credential.user.getIdToken();
   return {
     firebaseUser: credential.user,
     idToken,
+    profile: profile || buildFirebaseSessionUser(credential.user),
   };
 }
 

@@ -16,8 +16,10 @@ import {
   updateUserRole,
 } from './services/api.js';
 import {
+  initFirebaseAuthObserver,
   signInWithGooglePopup,
   signOutFirebase,
+  syncFirebaseUserProfile,
   testConnection,
 } from './services/firebase.js';
 import {
@@ -27,6 +29,7 @@ import {
   store,
   subscribe,
 } from './state/store.js';
+import { buildFirebaseSessionUser, isStaticHostApiError } from './utils/authFallback.js';
 import { validateLivestockSubmission } from './utils/domain.js';
 import { canAccessTab, getRoleLabel, validateAuthCredentials } from './utils/rbac.js';
 import { compressUploadedImage, generateAngleCanvasPreview } from './components/svgLivestock.js';
@@ -313,15 +316,32 @@ async function handleGoogleLogin() {
   if (googleBtn) googleBtn.disabled = true;
 
   try {
-    const { idToken } = await signInWithGooglePopup();
-    await loginWithGoogleToken(idToken);
-    const workspace = await fetchWorkspace();
-    applyWorkspaceData(workspace);
-    closeModal('modal-auth');
-    showToast(
-      `Masuk Google Berhasil`,
-      `Selamat datang ${workspace.user.displayName} (${getRoleLabel(workspace.user.role)}).`
-    );
+    const { firebaseUser, idToken, profile } = await signInWithGooglePopup();
+    try {
+      await loginWithGoogleToken(idToken);
+      const workspace = await fetchWorkspace();
+      applyWorkspaceData(workspace);
+      closeModal('modal-auth');
+      showToast(
+        'Masuk Google Berhasil',
+        `Selamat datang ${workspace.user.displayName} (${getRoleLabel(workspace.user.role)}).`
+      );
+    } catch (apiError) {
+      if (!isStaticHostApiError(apiError)) {
+        throw apiError;
+      }
+      const fallbackUser = profile || buildFirebaseSessionUser(firebaseUser);
+      if (!fallbackUser) {
+        throw apiError;
+      }
+      store.state.currentUser = fallbackUser;
+      notify();
+      closeModal('modal-auth');
+      showToast(
+        'Masuk Google Berhasil',
+        `Selamat datang ${fallbackUser.displayName} (${getRoleLabel(fallbackUser.role)}).`
+      );
+    }
   } catch (error) {
     setAuthError(
       error instanceof Error
@@ -335,7 +355,7 @@ async function handleGoogleLogin() {
 
 async function handleLogout() {
   try {
-    await logoutSession();
+    await logoutSession().catch(() => {});
     await signOutFirebase().catch(() => {});
   } finally {
     store.state.activeTab = 'katalog';
@@ -344,6 +364,11 @@ async function handleLogout() {
       applyPublicCatalog(catalog);
     } else {
       store.state.currentUser = null;
+      store.state.userOrders = [];
+      store.state.adminVerifications = [];
+      store.state.users = [];
+      store.state.negotiatedPrices = {};
+      store.state.chatHistory = {};
       notify();
     }
     showToast('Keluar Berhasil', 'Sesi akun Anda telah ditutup.');
@@ -624,7 +649,19 @@ async function init() {
       const catalog = await fetchPublicCatalog();
       applyPublicCatalog(catalog);
     }
-  } catch {
+  } catch (error) {
+    if (isStaticHostApiError(error)) {
+      initFirebaseAuthObserver(async (firebaseUser) => {
+        if (!firebaseUser) return;
+        try {
+          const synced = await syncFirebaseUserProfile(firebaseUser);
+          store.state.currentUser = synced || buildFirebaseSessionUser(firebaseUser);
+        } catch {
+          store.state.currentUser = buildFirebaseSessionUser(firebaseUser);
+        }
+        notify();
+      });
+    }
     renderApp(store.state);
   }
 }

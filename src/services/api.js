@@ -4,6 +4,11 @@ export function setAuthToken(token) {
   inMemoryToken = token || null;
 }
 
+const API_BASE_URL =
+  typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL
+    ? String(import.meta.env.VITE_API_BASE_URL).replace(/\/+$/, '')
+    : '';
+
 export function getAuthToken() {
   return inMemoryToken;
 }
@@ -16,15 +21,27 @@ async function apiRequest(url, options = {}) {
     ...(options.headers || {}),
   };
 
-  const response = await fetch(url, {
+  const targetUrl = API_BASE_URL && url.startsWith('/') ? `${API_BASE_URL}${url}` : url;
+  const response = await fetch(targetUrl, {
     ...options,
     headers,
     credentials: 'include',
   });
 
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const err = new Error('Layanan backend API tidak tersedia pada hosting statis ini.');
+    err.status = response.status;
+    err.isApiUnavailable = true;
+    throw err;
+  }
+
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.error || `Permintaan gagal (${response.status})`);
+    const err = new Error(data.error || `Permintaan gagal (${response.status})`);
+    err.status = response.status;
+    err.isApiUnavailable = response.status === 404 || response.status === 405;
+    throw err;
   }
   return data;
 }

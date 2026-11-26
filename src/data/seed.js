@@ -62,7 +62,7 @@ export function createInitialSeedState() {
           { no: 7, name: null, paid: false },
         ],
         titipRawat: true,
-        photos: null,
+        photos: { samping: '/assets/livestock/sapi-aceh-1.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#9A3412',
         deskripsi:
           'Sapi Aceh asli ras unggulan dengan postur padat, punuk proporsional, dan pakan hijauan alami pegunungan Seulawah. Telah masuk poel 1 sehingga sah untuk ibadah kurban maupun tradisi Meugang.',
@@ -93,7 +93,7 @@ export function createInitialSeedState() {
           { no: 7, name: null, paid: false },
         ],
         titipRawat: true,
-        photos: null,
+        photos: { samping: '/assets/livestock/sapi-limosin.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#7C2D12',
         deskripsi:
           'Sapi Limosin cross bobot jumbo dari dataran tinggi Gayo. Persentase karkas daging sangat tinggi (di atas 52%), cocok untuk kurban jamaah masjid atau keluarga besar.',
@@ -124,7 +124,7 @@ export function createInitialSeedState() {
           { no: 7, name: null, paid: false },
         ],
         titipRawat: true,
-        photos: null,
+        photos: { samping: '/assets/livestock/kerbau-aceh.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#334155',
         deskripsi:
           'Kerbau jantan pilihan favorit masyarakat Pidie dan Aceh Besar untuk kebutuhan daging tradisi Meugang serta kurban. Serat daging merah segar dan padat.',
@@ -147,7 +147,7 @@ export function createInitialSeedState() {
         patungan: false,
         slots: [],
         titipRawat: true,
-        photos: null,
+        photos: { samping: '/assets/livestock/kambing-etawa.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#D97706',
         deskripsi:
           'Kambing PE jantan sehat dan bersih, dipelihara khusus dengan pakan daun nangka, gamal, dan ampas tahu higienis. Tidak berbau prengus menyengat, ideal untuk akikah.',
@@ -170,7 +170,7 @@ export function createInitialSeedState() {
         patungan: false,
         slots: [],
         titipRawat: false,
-        photos: null,
+        photos: { samping: '/assets/livestock/domba-aceh.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#64748B',
         deskripsi:
           'Domba jantan berbulu tebal bersih dengan bobot optimal untuk pelaksanaan akikah maupun syukuran keluarga. Tersedia layanan pengantaran langsung ke seluruh Bireuen dan Lhokseumawe.',
@@ -201,7 +201,7 @@ export function createInitialSeedState() {
           { no: 7, name: null, paid: false },
         ],
         titipRawat: true,
-        photos: null,
+        photos: { samping: '/assets/livestock/sapi-aceh-3.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#B45309',
         deskripsi:
           'Sapi Aceh lokal berkualitas tinggi dengan tingkat lemak tipis dan rendemen daging maksimal. Siap potong untuk lapak Meugang maupun kurban.',
@@ -224,7 +224,7 @@ export function createInitialSeedState() {
         patungan: false,
         slots: [],
         titipRawat: true,
-        photos: null,
+        photos: { samping: '/assets/livestock/sapi-aceh-2.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#92400E',
         deskripsi:
           'Bakalan sapi Aceh jantan muda dengan tulang besar dan nafsu makan sangat kuat. Cocok untuk program penggemukan 4-6 bulan menjelang musim hari raya.',
@@ -247,7 +247,7 @@ export function createInitialSeedState() {
         patungan: false,
         slots: [],
         titipRawat: true,
-        photos: null,
+        photos: { samping: '/assets/livestock/kambing-kacang.jpg', depan: null, gigi: null, belakang: null },
         colorHex: '#78350F',
         deskripsi:
           'Kambing jantan lokal tangguh dari padang gembala Indrapuri. Sudah poel 1 pasang gigi seri permanen, memenuhi syarat sah kurban perseorangan.',

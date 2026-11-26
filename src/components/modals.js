@@ -158,11 +158,11 @@ export function renderInspectionAngle() {
     const safeAnglePhoto = sanitizeImageSrc(item.photos?.[mode]);
     if (safeAnglePhoto) {
       stage.innerHTML = `
-        <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-          <span style="position:absolute; top:4px; left:4px; padding:4px 8px; border-radius:6px; background:rgba(6,95,70,0.92); color:#fff; font-size:0.6875rem; font-weight:700;">
+        <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:8px;">
+          <span style="position:absolute; top:8px; left:8px; padding:4px 10px; border-radius:6px; background:rgba(6,95,70,0.92); color:#fff; font-size:0.6875rem; font-weight:700; z-index:2;">
             Foto Asli · ${escapeHtml(meta.label)}
           </span>
-          <img src="${safeAnglePhoto}" alt="${escapeHtml(meta.label)}" style="max-height:208px; width:auto; object-fit:contain; border-radius:8px;" />
+          <img src="${safeAnglePhoto}" alt="${escapeHtml(meta.label)}" style="width:100%; height:100%; object-fit:cover; object-position:center 28%; border-radius:8px;" />
         </div>
       `;
     } else {

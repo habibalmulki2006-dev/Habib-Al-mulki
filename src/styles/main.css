@@ -666,13 +666,26 @@ select:focus-visible {
   text-align: left;
 }
 
+.card-media-trigger--photo {
+  padding: 0;
+  overflow: hidden;
+}
+
 .card-media-status {
   position: absolute;
-  top: 12px;
-  left: 14px;
+  top: 10px;
+  left: 12px;
+  z-index: 2;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--brand-800);
+}
+
+.card-media-trigger--photo .card-media-status {
+  background: rgba(255, 255, 255, 0.94);
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.16);
 }
 
 .card-media-status--dp {
@@ -692,11 +705,11 @@ select:focus-visible {
 }
 
 .card-media-img {
-  max-height: 152px;
-  width: auto;
-  object-fit: contain;
-  border-radius: var(--radius-md);
-  background: var(--bg-surface);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+  display: block;
 }
 
 .card-body {
@@ -883,6 +896,11 @@ select:focus-visible {
   justify-content: center;
   flex-shrink: 0;
   padding: 8px;
+}
+
+.patungan-thumb--photo {
+  padding: 0;
+  overflow: hidden;
 }
 
 .patungan-slots-panel {

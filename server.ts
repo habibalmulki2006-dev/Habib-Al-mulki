@@ -230,6 +230,21 @@ function loadDatabase(): DatabaseSchema {
           changed = true;
         }
       }
+      const seedCatalog = createInitialSeedState().livestockData;
+      for (const seedItem of seedCatalog) {
+        const existingLivestock = parsed.livestockData.find((item) => item.id === seedItem.id);
+        if (
+          existingLivestock &&
+          seedItem.photos?.samping &&
+          (!existingLivestock.photos || !existingLivestock.photos.samping)
+        ) {
+          existingLivestock.photos = {
+            ...(existingLivestock.photos || {}),
+            ...seedItem.photos,
+          };
+          changed = true;
+        }
+      }
       if (changed) {
         saveDatabase(parsed);
       }

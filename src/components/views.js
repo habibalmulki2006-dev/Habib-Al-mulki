@@ -158,7 +158,7 @@ export function renderCatalogView(state) {
           <div>
             <button
               type="button"
-              class="card-media-trigger"
+              class="card-media-trigger ${safeSidePhoto ? 'card-media-trigger--photo' : ''}"
               data-action="open-detail"
               data-id="${escapeHtml(item.id)}"
               data-subtab="info"
@@ -269,7 +269,7 @@ export function renderPatunganView(state) {
       return `
         <article class="patungan-card">
           <div class="patungan-head">
-            <div class="patungan-thumb">${mediaHtml}</div>
+            <div class="patungan-thumb ${safePatunganPhoto ? 'patungan-thumb--photo' : ''}">${mediaHtml}</div>
             <div>
               <div class="card-meta-line">
                 <span class="meta-accent">${escapeHtml(item.jenis)}</span>
